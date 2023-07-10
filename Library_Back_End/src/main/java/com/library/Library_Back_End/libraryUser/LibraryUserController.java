@@ -1,5 +1,6 @@
 package com.library.Library_Back_End.libraryUser;
 
+import com.library.Library_Back_End.libraryUser.dto.AddLibraryUserRequest;
 import com.library.Library_Back_End.libraryUser.dto.ChangePasswordRequest;
 import com.library.Library_Back_End.libraryUser.dto.LibraryUserResponse;
 import com.library.Library_Back_End.libraryUser.dto.UpdateLibraryUserRequest;
@@ -42,6 +43,11 @@ public class LibraryUserController {
     @PostMapping("/updateUser")
     public HttpStatus updateUser(@RequestBody UpdateLibraryUserRequest updateLibraryUserRequest) {
         return libraryUserService.updateUser(updateLibraryUserRequest);
+    }
+
+    @PostMapping("/addUser")
+    public HttpStatus updateUser(@RequestBody AddLibraryUserRequest addLibraryUserRequest) {
+        return libraryUserService.addUser(addLibraryUserRequest);
     }
 
     @PostMapping("/changePassword")

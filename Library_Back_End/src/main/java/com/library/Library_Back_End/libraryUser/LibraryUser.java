@@ -60,4 +60,12 @@ public class LibraryUser {
         this.password = password;
         this.roles = roles;
     }
+
+    public LibraryUser(String username, String password, List<Role> roles, LibraryUser createdBy, LibraryUser lastModifiedBy) {
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+        this.createdBy = createdBy;
+        this.lastModifiedBy = lastModifiedBy;
+    }
 }

@@ -1,9 +1,6 @@
 package com.library.Library_Back_End.libraryUser;
 
-import com.library.Library_Back_End.libraryUser.dto.ChangePasswordRequest;
-import com.library.Library_Back_End.libraryUser.dto.LibraryUserResponse;
-import com.library.Library_Back_End.libraryUser.dto.SingleLibraryUserResponse;
-import com.library.Library_Back_End.libraryUser.dto.UpdateLibraryUserRequest;
+import com.library.Library_Back_End.libraryUser.dto.*;
 import com.library.Library_Back_End.login.LoginService;
 import com.library.Library_Back_End.login.dto.LoginAuthResponse;
 import com.library.Library_Back_End.login.dto.LoginRequest;
@@ -92,6 +89,28 @@ public class LibraryUserService implements UserDetailsService {
             libraryUser.setUsername(updateLibraryUserRequest.getUsername());
             libraryUser.setPassword(passwordEncoder.encode(updateLibraryUserRequest.getPassword()));
             libraryUser.setRoles(roles);
+            libraryUserRepository.save(libraryUser);
+
+            return HttpStatus.OK;
+        } catch (Exception e) {
+            return HttpStatus.CONFLICT;
+        }
+    }
+
+    @Transactional
+    public HttpStatus addUser(AddLibraryUserRequest addLibraryUserRequest){
+        try {
+            List<Role> roles = addLibraryUserRequest.getRoles().stream()
+                    .map(roleEnum -> new Role(roleEnum))
+                    .collect(Collectors.toList());
+
+            LibraryUser libraryUser = new LibraryUser(
+                    addLibraryUserRequest.getUsername(),
+                    passwordEncoder.encode(addLibraryUserRequest.getPassword()),
+                    roles,
+                    libraryUserRepository.findByUsername(addLibraryUserRequest.getCreatedBy()).orElseThrow(),
+                    libraryUserRepository.findByUsername(addLibraryUserRequest.getLastModifiedBy()).orElseThrow()
+            );
             libraryUserRepository.save(libraryUser);
 
             return HttpStatus.OK;
