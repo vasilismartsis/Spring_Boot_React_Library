@@ -3,6 +3,7 @@ package com.library.Library_Back_End.libraryUser;
 import com.library.Library_Back_End.libraryUser.dto.ChangePasswordRequest;
 import com.library.Library_Back_End.libraryUser.dto.LibraryUserResponse;
 import com.library.Library_Back_End.libraryUser.dto.SingleLibraryUserResponse;
+import com.library.Library_Back_End.libraryUser.dto.UpdateLibraryUserRequest;
 import com.library.Library_Back_End.login.LoginService;
 import com.library.Library_Back_End.login.dto.LoginAuthResponse;
 import com.library.Library_Back_End.login.dto.LoginRequest;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ public class LibraryUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LibraryUser libraryUser = libraryUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
-        return new org.springframework.security.core.userdetails.User(libraryUser.getUsername(), libraryUser.getPassword(), mapRolesToAuthorities(libraryUser.getRole()));
+        return new org.springframework.security.core.userdetails.User(libraryUser.getUsername(), libraryUser.getPassword(), mapRolesToAuthorities(libraryUser.getRoles()));
     }
 
     private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
@@ -81,20 +80,50 @@ public class LibraryUserService implements UserDetailsService {
             return new ResponseEntity<>(new LoginAuthResponse("Wrong Current Password!"), HttpStatus.UNAUTHORIZED);
         }
     }
+    
+    @Transactional
+    public HttpStatus updateUser(UpdateLibraryUserRequest updateLibraryUserRequest){
+        try {
+            List<Role> roles = updateLibraryUserRequest.getRoles().stream()
+                    .map(roleEnum -> new Role(roleEnum))
+                    .collect(Collectors.toList());
 
-    public LibraryUserResponse getUsers(int page, String order, String sortedColumn, String searchColumn, String searchValue) {
+            LibraryUser libraryUser = libraryUserRepository.findById(updateLibraryUserRequest.getId()).orElseThrow();
+            libraryUser.setUsername(updateLibraryUserRequest.getUsername());
+            libraryUser.setPassword(passwordEncoder.encode(updateLibraryUserRequest.getPassword()));
+            libraryUser.setRoles(roles);
+            libraryUserRepository.save(libraryUser);
+
+            return HttpStatus.OK;
+        } catch (Exception e) {
+            return HttpStatus.CONFLICT;
+        }
+    }
+
+    public LibraryUserResponse getUsers(List<String> selectedRoles, int page, String order, String sortedColumn, String searchColumn, String searchValue) {
         long totalLibraryUserNumber = libraryUserRepository.count();
 
         Sort.Direction sortDirection = order.equals("descend") ? Sort.Direction.DESC : Sort.Direction.ASC;
         String noNullSortedColumn = sortedColumn.equals("undefined") ? "id" : sortedColumn;
         Sort sort = Sort.by(sortDirection, noNullSortedColumn);
+        ArrayList<RoleEnum> rolesEnum = selectedRoles.stream()
+                .map(roleString -> RoleEnum.valueOf(roleString.toUpperCase()))
+                .collect(Collectors.toCollection(ArrayList::new));
         Pageable pageable = !order.equals("undefined") ? PageRequest.of(page - 1, 5, sort) : PageRequest.of(page - 1, 5);
 
         Page<LibraryUser> libraryUserPage;
-        if (!searchColumn.equals("")) {
-            libraryUserPage = libraryUserRepository.findAll(libraryUserSpecifications.findAllByColumnContaining(searchColumn, searchValue), pageable);
+        if (selectedRoles.isEmpty()) {
+            if (!searchColumn.equals("")) {
+                libraryUserPage = libraryUserRepository.findAll(libraryUserSpecifications.findAllByColumnContaining(searchColumn, searchValue), pageable);
+            } else {
+                libraryUserPage = libraryUserRepository.findAll(pageable);
+            }
         } else {
-            libraryUserPage = libraryUserRepository.findAll(pageable);
+            if (!searchColumn.equals("")) {
+                libraryUserPage = libraryUserRepository.findAll(libraryUserSpecifications.findAllByRoleAndColumnContaining(rolesEnum, searchColumn, searchValue), pageable);
+            } else {
+                libraryUserPage = libraryUserRepository.findAll(libraryUserSpecifications.findAllByRole(rolesEnum), pageable);
+            }
         }
         List<SingleLibraryUserResponse> singleLibraryUserResponse = libraryUserPage
                 .stream()
@@ -104,10 +133,19 @@ public class LibraryUserService implements UserDetailsService {
                         entity.getCreationDate(),
                         entity.getLastModifiedDate(),
                         entity.getId(),
-                        entity.getUsername())
+                        entity.getUsername(),
+                        entity.getPassword(),
+                        entity.getRoles().stream()
+                                .map(Role::getRole)
+                                .collect(Collectors.toList())
+                        )
                     )
                 .toList();
 
         return new LibraryUserResponse(totalLibraryUserNumber, singleLibraryUserResponse);
+    }
+
+    public RoleEnum[] getRoles() {
+        return RoleEnum.values();
     }
 }

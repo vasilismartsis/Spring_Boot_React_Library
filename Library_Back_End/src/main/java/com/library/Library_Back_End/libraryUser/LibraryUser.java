@@ -16,7 +16,8 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @NoArgsConstructor
 @Entity
 @Table
-@Data
+@Getter
+@Setter
 public class LibraryUser {
     @Id
     @Column
@@ -38,25 +39,25 @@ public class LibraryUser {
     @Column
     @JoinTable(name = "User_Role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> role;
+    private List<Role> roles;
     @ManyToOne
     @CreatedBy
-    protected LibraryUser createdBy;
+    private LibraryUser createdBy;
     @ManyToOne
     @LastModifiedBy
-    protected LibraryUser lastModifiedBy;
+    private LibraryUser lastModifiedBy;
     @Column(name = "creation_date")
     @CreationTimestamp
     @Temporal(TIMESTAMP)
-    protected Date creationDate;
+    private Date creationDate;
     @Column(name = "last_modified_date")
     @UpdateTimestamp
     @Temporal(TIMESTAMP)
-    protected Date lastModifiedDate;
+    private Date lastModifiedDate;
 
-    public LibraryUser(String username, String password, List<Role> role) {
+    public LibraryUser(String username, String password, List<Role> roles) {
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.roles = roles;
     }
 }

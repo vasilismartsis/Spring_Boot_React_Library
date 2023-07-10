@@ -20,7 +20,7 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    @ManyToMany(mappedBy = "role")
+    @ManyToMany(mappedBy = "roles")
     private List<LibraryUser> libraryUsers;
 
     public Role(RoleEnum role) {
