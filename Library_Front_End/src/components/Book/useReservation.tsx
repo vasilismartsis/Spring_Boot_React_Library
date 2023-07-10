@@ -27,8 +27,10 @@ export const useReservation: () => ReservationState = () => {
     username: string;
     bookId: number;
   }) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
     return axios.post(
-      `http://localhost:8080/api/reservation/reserve`,
+      `http://${ip}:8080/api/reservation/reserve`,
       { username, bookId },
       {
         headers: {

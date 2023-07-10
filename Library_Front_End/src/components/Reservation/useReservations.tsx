@@ -33,8 +33,10 @@ export const useReservations: () => ReservationsState = () => {
   const [searchValue, setSearchValue] = useState<string>("");
 
   const getReservations = () => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
     return axios.get(
-      `http://localhost:8080/api/reservation/getReservations?page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.columnKey}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+      `http://${ip}:8080/api/reservation/getReservations?page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.columnKey}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
       {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,

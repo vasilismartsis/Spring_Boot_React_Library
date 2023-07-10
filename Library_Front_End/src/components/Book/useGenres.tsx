@@ -13,7 +13,9 @@ export const useGenres: () => GenresState = () => {
   const [genres, setGenres] = useState<string[]>([]);
 
   const getGenres = () => {
-    return axios.get(`http://localhost:8080/api/book/getGenres`, {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.get(`http://${ip}:8080/api/book/getGenres`, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },

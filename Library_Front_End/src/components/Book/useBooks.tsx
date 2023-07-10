@@ -34,8 +34,10 @@ export const useBooks: () => BooksState = () => {
   const [searchValue, setSearchValue] = useState<string>("");
 
   const getBooks = () => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
     return axios.get(
-      `http://localhost:8080/api/book/getBooks?genres=${genres}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+      `http://${ip}:8080/api/book/getBooks?genres=${genres}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
       {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,

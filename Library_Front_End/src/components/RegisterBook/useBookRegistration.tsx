@@ -26,7 +26,9 @@ export const useBookRegistration: () => RegistrationState = () => {
   const [form] = useForm<RegisterBookForm>();
 
   const postBookRegistration = (values: RegisterBookForm) => {
-    return axios.post(`http://localhost:8080/api/book/registerBook`, values, {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.post(`http://${ip}:8080/api/book/registerBook`, values, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },

@@ -20,8 +20,10 @@ export const useChangePassword: () => ChangePasswordStateProps = () => {
   const [form] = useForm<ChangePasswordForm>();
 
   const postChangePassword = (values: ChangePasswordForm) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
     return axios.post(
-      `http://localhost:8080/api/user/changePassword`,
+      `http://${ip}:8080/api/user/changePassword`,
       { username: sessionStorage.getItem("username"), ...values },
       {
         headers: {
