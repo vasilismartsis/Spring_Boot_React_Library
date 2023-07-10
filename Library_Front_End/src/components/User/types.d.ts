@@ -10,6 +10,6 @@ export type LibraryUser = {
   roles: string[];
   createdBy: string;
   lastModifiedBy: string;
-  creationDate: Date;
-  lastModifiedDate: Date;
+  creationDate: string;
+  lastModifiedDate: string;
 };

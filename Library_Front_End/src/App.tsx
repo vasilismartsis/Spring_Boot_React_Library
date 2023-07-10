@@ -8,7 +8,7 @@ import RegisterBook from "./components/RegisterBook/RegisterBook";
 import Login from "./components/Login/Login";
 import Profile from "./components/Profile/Profile";
 import Security from "./components/Profile/Security/Security";
-import MyReservations from "./components/Profile/MyReservations";
+import MyReservations from "./components/Profile/MyReservations/MyReservations";
 import { Layout } from "antd";
 import { ReactQueryDevtools } from "react-query-devtools";
 import { QueryClient, QueryClientProvider } from "react-query";

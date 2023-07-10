@@ -33,6 +33,11 @@ export interface UsersState {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => void;
+  doAddUser: (
+    data: LibraryUser,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => void;
   setSelectedRoles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
@@ -134,6 +139,34 @@ export const useUsers: () => UsersState = () => {
     });
   };
 
+  //Add user
+  const postAddUser = (values: LibraryUser) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.post(`http://${ip}:8080/api/user/addUser`, values, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+  };
+
+  const userAddMutation = useMutation("addUserQuery", postAddUser);
+
+  const doAddUser = (
+    values: LibraryUser,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => {
+    userAddMutation.mutate(values, {
+      onSuccess,
+      onError: (error) => {
+        onError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      },
+    });
+  };
+
   return {
     totalUserNumber,
     users,
@@ -148,6 +181,7 @@ export const useUsers: () => UsersState = () => {
     setSearchColumn,
     setSearchValue,
     doUpdateUser,
+    doAddUser,
     setSelectedRoles,
   };
 };
