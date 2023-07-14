@@ -1,3 +1,5 @@
+import { ColumnType } from "antd/es/table";
+
 export type ReservationResource = {
     totalReservationNumber: number;
     singleReservationResponse: Reservation[];
@@ -13,4 +15,9 @@ export type Reservation = {
     lastModifiedBy: string;
     creationDate: Date;
     lastModifiedDate: Date;
+}
+
+export interface ReservationColumn extends ColumnType<Reservation> {
+  searchable?: boolean;
+  sortable?: boolean;
 }

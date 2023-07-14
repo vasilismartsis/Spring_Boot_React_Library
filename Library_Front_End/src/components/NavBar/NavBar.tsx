@@ -35,10 +35,10 @@ const NavBar: React.FC<NavBarProps> = (props) => {
     {
       label: (
         <a href="/books" style={{ textDecoration: "none" }}>
-          View / Reserve Books
+          Books
         </a>
       ),
-      key: "ViewReserveBooks",
+      key: "Books",
     },
     sessionStorage.getItem("role") == "ADMIN"
       ? {
@@ -60,14 +60,6 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                 </a>
               ),
               key: "users",
-            },
-            {
-              label: (
-                <a href="/register-book" className="navbar-item">
-                  Register Book
-                </a>
-              ),
-              key: "registerBook",
             },
           ],
         }

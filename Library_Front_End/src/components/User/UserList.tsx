@@ -168,9 +168,15 @@ const UserList: React.FC = () => {
   ];
 
   const enhancedColumns: ColumnsType<LibraryUser> = columns.map((col) => {
+    const columnType =
+      users.length > 0
+        ? typeof (users[0] as any)[String(col.dataIndex)]
+        : "string";
+
     return {
       ...col,
       width: 200,
+      align: columnType == "number" ? "right" : "left",
       sorter: col.sortable ? true : false,
       filterDropdown: col.searchable
         ? ({ confirm }) => {

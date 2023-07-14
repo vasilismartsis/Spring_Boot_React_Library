@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Reservation } from "./types";
+import { Reservation, ReservationColumn } from "./types";
 import {
   Input,
   Pagination,
@@ -53,207 +53,114 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
     setSearchValue(searchValue);
   };
 
-  const columns: ColumnsType<Reservation> = [
+  const columns: ReservationColumn[] = [
     {
       key: "id",
       title: "Id",
       dataIndex: "id",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("id", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "libraryUser",
       title: "username",
       dataIndex: "username",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("libraryUser", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "bookTitle",
       title: "Book Title",
       dataIndex: "bookTitle",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("book", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "reservationDate",
       title: "Reservation Date",
       dataIndex: "reservationDate",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("reservationDate", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "expirationDate",
       title: "Expiration Date",
       dataIndex: "expirationDate",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("expirationDate", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "createdBy",
       title: "Created By",
       dataIndex: "createdBy",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("createdBy", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "lastModifiedBy",
       title: "Last Modified By",
       dataIndex: "lastModifiedBy",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("lastModifiedBy", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "creationDate",
       title: "Creation Date",
       dataIndex: "creationDate",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("creationDate", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
     {
       key: "lastModifiedDate",
       title: "Last Modified Date",
       dataIndex: "lastModifiedDate",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("lastModifiedDate", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      searchable: true,
+      sortable: true,
     },
   ];
+
+  const enhancedColumns: ColumnsType<Reservation> = columns.map((col) => {
+    const columnType =
+      reservations.length > 0
+        ? typeof (reservations[0] as any)[String(col.dataIndex)]
+        : "string";
+
+    return {
+      ...col,
+      width: 200,
+      align: columnType == "number" ? "right" : "left",
+      sorter: col.sortable ? true : false,
+      filterDropdown: col.searchable
+        ? ({ confirm }) => {
+            return (
+              <Input
+                autoFocus
+                placeholder="Search column"
+                onChange={(e) => {
+                  onSearch(String(col.key), e.target.value);
+                }}
+                onPressEnter={() => confirm}
+              />
+            );
+          }
+        : false,
+      filterIcon: col.searchable
+        ? () => {
+            return <SearchOutlined />;
+          }
+        : false,
+    };
+  });
 
   useEffect(() => {
     setTableData(
       reservations.map((reservation) => ({
         key: reservation.id,
         ...reservation,
-        createdBy: reservation.createdBy ? reservation.createdBy : "No one",
+        createdBy: reservation.createdBy ? reservation.createdBy : "System",
         lastModifiedBy: reservation.lastModifiedBy
           ? reservation.lastModifiedBy
-          : "No one",
+          : "System",
       }))
     );
   }, [reservations]);
@@ -278,7 +185,7 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
   return (
     <>
       <Table<Reservation>
-        columns={columns}
+        columns={enhancedColumns}
         dataSource={tableData}
         pagination={pagination}
         bordered={true}

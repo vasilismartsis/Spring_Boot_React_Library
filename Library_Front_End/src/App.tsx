@@ -4,7 +4,6 @@ import Reservation from "./components/Reservation/Reservation";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainPage from "./components/Main/MainPage";
 import BookList from "./components/Book/BookList";
-import RegisterBook from "./components/RegisterBook/RegisterBook";
 import Login from "./components/Login/Login";
 import Profile from "./components/Profile/Profile";
 import Security from "./components/Profile/Security/Security";
@@ -53,18 +52,6 @@ function App() {
                 <>
                   {sessionStorage.getItem("role") == "ADMIN" ? (
                     <User />
-                  ) : (
-                    <MainPage />
-                  )}
-                </>
-              }
-            />
-            <Route
-              path="register-book"
-              element={
-                <>
-                  {sessionStorage.getItem("role") == "ADMIN" ? (
-                    <RegisterBook />
                   ) : (
                     <MainPage />
                   )}

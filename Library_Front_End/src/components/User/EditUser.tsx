@@ -1,7 +1,6 @@
 import { Button, Checkbox, Form, Input, Select } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
 import React, { useEffect } from "react";
-import { RegisterBookForm } from "../RegisterBook/types";
 import { EditUserForm, LibraryUser } from "./types";
 import { useEditUser } from "./useEditUser";
 const { Option } = Select;
