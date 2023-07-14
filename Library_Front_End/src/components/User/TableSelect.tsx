@@ -5,12 +5,14 @@ import { LibraryUser } from "./types";
 interface TableSelectProps {
   record: LibraryUser;
   roles: string[];
+  editedUser: LibraryUser | undefined;
   setEditedUser: React.Dispatch<React.SetStateAction<LibraryUser | undefined>>;
 }
 
 const TableSelect: React.FC<TableSelectProps> = ({
   record,
   roles,
+  editedUser,
   setEditedUser,
 }) => {
   return (
@@ -33,7 +35,7 @@ const TableSelect: React.FC<TableSelectProps> = ({
           placeholder="Please select"
           onChange={(e) => {
             setEditedUser({
-              ...record,
+              ...editedUser,
               roles: e,
             } as LibraryUser);
           }}

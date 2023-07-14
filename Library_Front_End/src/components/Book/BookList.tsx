@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Book, BookResource } from "./types";
+import { Book, BookColumn, BookResource } from "./types";
 import {
   Button,
   Dropdown,
@@ -24,7 +24,7 @@ import axios from "axios";
 import { useGenres } from "./useGenres";
 import { useBooks } from "./useBooks";
 import { parse } from "path";
-import { useReservation } from "./useReservation";
+import { useReserveBook } from "./useReserveBook";
 import { ColumnsType, TableProps } from "antd/es/table";
 import {
   ColumnFilterItem,
@@ -50,7 +50,7 @@ const BookList: React.FC = () => {
     setSearchColumn,
     setSearchValue,
   } = useBooks();
-  const { doReservation } = useReservation();
+  const { doReserveBook } = useReserveBook();
 
   useEffect(() => {
     refetch();
@@ -78,15 +78,16 @@ const BookList: React.FC = () => {
     }
   }, [bookError]);
 
-  const onReservationSuccess = () => {
+  const onReserveBookSuccess = () => {
     message.success(
       <span style={{ fontSize: "30px" }}>
         You have succesfully reserved this book!
       </span>
     );
+    refetch();
   };
 
-  const onReservationError = (error: string) => {
+  const onReserveBookError = (error: string) => {
     message.error(
       <span style={{ fontSize: "30px" }}>Reservation Failed: {error}</span>
     );
@@ -97,33 +98,20 @@ const BookList: React.FC = () => {
     setSearchValue(searchValue);
   };
 
-  const columns: ColumnsType<Book> = [
+  const columns: BookColumn[] = [
     {
       key: "id",
       title: "Id",
       dataIndex: "id",
-      sorter: true,
+      sortable: true,
+      searchable: true,
     },
     {
       key: "title",
       title: "Title",
       dataIndex: "title",
-      sorter: true,
-      filterDropdown: ({ confirm }) => {
-        return (
-          <Input
-            autoFocus
-            placeholder="Search column"
-            onChange={(e) => {
-              onSearch("title", e.target.value);
-            }}
-            onPressEnter={() => confirm}
-          />
-        );
-      },
-      filterIcon: () => {
-        return <SearchOutlined />;
-      },
+      sortable: true,
+      searchable: true,
     },
     {
       key: "genre",
@@ -135,24 +123,63 @@ const BookList: React.FC = () => {
         value: genre,
       })),
       filterSearch: true,
+      sortable: true,
+    },
+    {
+      key: "quantity",
+      title: "Quantity",
+      dataIndex: "quantity",
+      sortable: true,
+      searchable: true,
     },
     {
       title: "Action",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <button
-            style={{ color: "green" }}
+          <Button
+            style={{ borderColor: "green" }}
             onClick={() => {
-              doReservation(record, onReservationSuccess, onReservationError);
+              doReserveBook(
+                record.id,
+                onReserveBookSuccess,
+                onReserveBookError
+              );
             }}
           >
             Reserve
-          </button>
+          </Button>
         </Space>
       ),
     },
   ];
+
+  const enhancedColumns: ColumnsType<Book> = columns.map((col) => {
+    return {
+      ...col,
+      width: 200,
+      sorter: col.sortable ? true : false,
+      filterDropdown: col.searchable
+        ? ({ confirm }) => {
+            return (
+              <Input
+                autoFocus
+                placeholder="Search column"
+                onChange={(e) => {
+                  onSearch(String(col.key), e.target.value);
+                }}
+                onPressEnter={() => confirm}
+              />
+            );
+          }
+        : false,
+      filterIcon: col.searchable
+        ? () => {
+            return <SearchOutlined />;
+          }
+        : false,
+    };
+  });
 
   useEffect(() => {
     setTableData(
@@ -184,8 +211,15 @@ const BookList: React.FC = () => {
 
   return (
     <>
+      <Button
+        // onClick={handleAddBook}
+        type="primary"
+        style={{ marginBottom: 16 }}
+      >
+        Add a new book
+      </Button>
       <Table<Book>
-        columns={columns}
+        columns={enhancedColumns}
         dataSource={tableData}
         pagination={pagination}
         bordered={true}

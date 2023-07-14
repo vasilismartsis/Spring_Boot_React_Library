@@ -1,3 +1,5 @@
+import { ColumnType } from "antd/es/table";
+
 export type UserResource = {
   totalLibraryUserNumber: number;
   singleLibraryUserResponse: LibraryUser[];
@@ -13,3 +15,20 @@ export type LibraryUser = {
   creationDate: string;
   lastModifiedDate: string;
 };
+
+export interface UserColumn extends ColumnType<LibraryUser> {
+  searchable?: boolean;
+  sortable?: boolean;
+}
+
+export type AddUserForm = {
+  username: string;
+  password: string;
+  roles: string[];
+}
+
+export type EditUserForm = {
+  username: string;
+  password: string;
+  roles: string[];
+}

@@ -38,6 +38,11 @@ export interface UsersState {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => void;
+  doDeleteUser: (
+    data: LibraryUser,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => void;
   setSelectedRoles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
@@ -52,6 +57,60 @@ export const useUsers: () => UsersState = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [roles, setRoles] = useState<string[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+
+  //Get roles
+  const getRoles = () => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.get(`http://${ip}:8080/api/user/getRoles`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+  };
+
+  const { error: roleError, refetch: roleRefetch } = useQuery(
+    "getRoles",
+    getRoles,
+    {
+      enabled: false,
+      onSuccess: (res) => {
+        setRoles(res.data);
+      },
+    }
+  );
+
+  useEffect(() => {
+    roleRefetch();
+  }, []);
+
+  //Add user
+  const postAddUser = (values: LibraryUser) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.post(`http://${ip}:8080/api/user/addUser`, values, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+  };
+
+  const addUserMutation = useMutation("addUserQuery", postAddUser);
+
+  const doAddUser = (
+    values: LibraryUser,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => {
+    addUserMutation.mutate(values, {
+      onSuccess,
+      onError: (error) => {
+        onError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      },
+    });
+  };
 
   //Get user
   const getUsers = () => {
@@ -85,32 +144,6 @@ export const useUsers: () => UsersState = () => {
     userRefetch();
   }, [currentPage, sorterResult, searchValue, searchColumn, selectedRoles]);
 
-  //Get roles
-  const getRoles = () => {
-    const currentURL = window.location.href;
-    const ip = new URL(currentURL).hostname;
-    return axios.get(`http://${ip}:8080/api/user/getRoles`, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-    });
-  };
-
-  const { error: roleError, refetch: roleRefetch } = useQuery(
-    "getRoles",
-    getRoles,
-    {
-      enabled: false,
-      onSuccess: (res) => {
-        setRoles(res.data);
-      },
-    }
-  );
-
-  useEffect(() => {
-    roleRefetch();
-  }, []);
-
   //Update user
   const postUpdateUser = (values: LibraryUser) => {
     const currentURL = window.location.href;
@@ -122,14 +155,14 @@ export const useUsers: () => UsersState = () => {
     });
   };
 
-  const userUpdateMutation = useMutation("updateUserQuery", postUpdateUser);
+  const updateUserMutation = useMutation("updateUserQuery", postUpdateUser);
 
   const doUpdateUser = (
     values: LibraryUser,
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
-    userUpdateMutation.mutate(values, {
+    updateUserMutation.mutate(values, {
       onSuccess,
       onError: (error) => {
         onError(
@@ -139,25 +172,25 @@ export const useUsers: () => UsersState = () => {
     });
   };
 
-  //Add user
-  const postAddUser = (values: LibraryUser) => {
+  //Delete user
+  const postDeleteUser = (values: LibraryUser) => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
-    return axios.post(`http://${ip}:8080/api/user/addUser`, values, {
+    return axios.post(`http://${ip}:8080/api/user/deleteUser`, values, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
   };
 
-  const userAddMutation = useMutation("addUserQuery", postAddUser);
+  const deleteUserMutation = useMutation("deleteUserQuery", postDeleteUser);
 
-  const doAddUser = (
+  const doDeleteUser = (
     values: LibraryUser,
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
-    userAddMutation.mutate(values, {
+    deleteUserMutation.mutate(values, {
       onSuccess,
       onError: (error) => {
         onError(
@@ -182,6 +215,7 @@ export const useUsers: () => UsersState = () => {
     setSearchValue,
     doUpdateUser,
     doAddUser,
+    doDeleteUser,
     setSelectedRoles,
   };
 };

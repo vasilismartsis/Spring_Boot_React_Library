@@ -3,6 +3,7 @@ import {
   Dropdown,
   Form,
   Input,
+  Modal,
   Pagination,
   Popconfirm,
   Select,
@@ -13,13 +14,20 @@ import {
 } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
 import { useUsers } from "./useUsers";
-import { useColumns } from "./useColumns";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SorterResult, TablePaginationConfig } from "antd/es/table/interface";
 import { Book } from "../Book/types";
-import { LibraryUser } from "./types";
+import { AddUserForm, EditUserForm, LibraryUser, UserColumn } from "./types";
 import { SearchOutlined } from "@ant-design/icons";
 import { merge } from "jquery";
+import AddUser from "./AddUser";
+import { useForm } from "antd/es/form/Form";
+import EditUser from "./EditUser";
+import { useAddUser } from "./useAddUser";
+import { useEditUser } from "./useEditUser";
+import type { DraggableData, DraggableEvent } from "react-draggable";
+import Draggable from "react-draggable";
+import { useDeleteUser } from "./useDeleteUser";
 
 const UserList: React.FC = () => {
   const [tableData, setTableData] = useState<LibraryUser[]>([]);
@@ -27,19 +35,169 @@ const UserList: React.FC = () => {
   const {
     totalUserNumber,
     users,
+    userError,
+    roles,
+    roleError,
+    roleRefetch,
     setCurrentPage,
     currentPage,
+    userRefetch,
     setSorterResult,
+    setSearchColumn,
+    setSearchValue,
+    doUpdateUser,
+    doAddUser,
+    doDeleteUser,
     setSelectedRoles,
   } = useUsers();
 
   const {
-    mergedColumns,
-    setIsEditing,
-    setIsAdding,
-    setEditedId,
+    openAddUserModal,
+    addUserForm,
+    handleAddUser,
+    handleAddUserOk,
+    handleAddUserCancel,
+    onAddUserFinish,
+    onAddUserFinishFailed,
+  } = useAddUser();
+
+  const {
+    openEditUserModal,
+    editUserForm,
+    handleEditUser,
+    handleEditUserOk,
+    handleEditUserCancel,
+    onEditUserFinish,
+    onEditUserFinishFailed,
+    editedUser,
     setEditedUser,
-  } = useColumns();
+  } = useEditUser();
+
+  const { handleDeleteUserOk, setDeletedUser } = useDeleteUser();
+
+  const columns: UserColumn[] = [
+    {
+      key: "id",
+      title: "Id",
+      dataIndex: "id",
+      searchable: true,
+      sortable: true,
+    },
+    {
+      key: "username",
+      title: "Username",
+      dataIndex: "username",
+      searchable: true,
+      sortable: true,
+    },
+    {
+      key: "roles",
+      title: "Roles",
+      dataIndex: "roles",
+      filters: roles.map((role) => ({
+        text: role,
+        value: role,
+      })),
+      filterSearch: true,
+      sortable: true,
+    },
+    {
+      key: "createdBy",
+      title: "Created By",
+      dataIndex: "createdBy",
+      searchable: true,
+      sortable: true,
+    },
+    {
+      key: "lastModifiedBy",
+      title: "Last Modified By",
+      dataIndex: "lastModifiedBy",
+      searchable: true,
+      sortable: true,
+    },
+    {
+      key: "creationDate",
+      title: "Creation Date",
+      dataIndex: "creationDate",
+      searchable: true,
+      sortable: true,
+    },
+    {
+      key: "lastModifiedDate",
+      title: "Last Modified Date",
+      dataIndex: "lastModifiedDate",
+      searchable: true,
+      sortable: true,
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, record: LibraryUser) => {
+        return (
+          <>
+            <Button
+              style={{ borderColor: "blue" }}
+              onClick={() => {
+                setEditedUser(record);
+                handleEditUser();
+              }}
+            >
+              Edit
+            </Button>
+            &nbsp;
+            <Popconfirm
+              title="Delete User"
+              description="Are you sure to delete this user?"
+              onConfirm={handleDeleteUserOk}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                danger
+                onClick={() => {
+                  setDeletedUser(record);
+                }}
+              >
+                Delete
+              </Button>
+            </Popconfirm>
+          </>
+        );
+      },
+    },
+  ];
+
+  const enhancedColumns: ColumnsType<LibraryUser> = columns.map((col) => {
+    return {
+      ...col,
+      width: 200,
+      sorter: col.sortable ? true : false,
+      filterDropdown: col.searchable
+        ? ({ confirm }) => {
+            return (
+              <Input
+                autoFocus
+                placeholder="Search column"
+                onChange={(e) => {
+                  onSearch(String(col.key), e.target.value);
+                }}
+                onPressEnter={() => confirm}
+              />
+            );
+          }
+        : false,
+      filterIcon: col.searchable
+        ? () => {
+            return <SearchOutlined />;
+          }
+        : false,
+    };
+  });
+
+  const onSearch = (searchColumnName: string, searchValue: string) => {
+    setSearchColumn(searchColumnName);
+    setSearchValue(searchValue);
+  };
 
   useEffect(() => {
     setTableData(
@@ -47,9 +205,8 @@ const UserList: React.FC = () => {
         key: user.id,
         ...user,
         roles: user.roles,
-        password: "******HIDDEN******",
-        createdBy: user.createdBy ? user.createdBy : "No one",
-        lastModifiedBy: user.lastModifiedBy ? user.lastModifiedBy : "No one",
+        createdBy: user.createdBy ? user.createdBy : "System",
+        lastModifiedBy: user.lastModifiedBy ? user.lastModifiedBy : "System",
       }))
     );
   }, [users]);
@@ -73,38 +230,50 @@ const UserList: React.FC = () => {
     );
   };
 
-  const handleAdd = () => {
-    const newLibraryUser = {
-      key: 55,
-      id: 55,
-      username: "",
-      password: "",
-      roles: [],
-      createdBy: sessionStorage["username"],
-      lastModifiedBy: sessionStorage["username"],
-      creationDate: new Date().toISOString(),
-      lastModifiedDate: new Date().toISOString(),
-    };
-
-    setTableData([...tableData, newLibraryUser]);
-    setEditedId(newLibraryUser.id);
-    setEditedUser(newLibraryUser);
-    setIsEditing(true);
-    setIsAdding(true);
-  };
-
   return (
     <>
-      <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
+      <Button
+        onClick={handleAddUser}
+        type="primary"
+        style={{ marginBottom: 16 }}
+      >
         Add a new user
       </Button>
       <Table<LibraryUser>
-        columns={mergedColumns}
+        columns={enhancedColumns}
         dataSource={tableData}
         pagination={pagination}
         bordered={true}
         onChange={onChange}
       />
+      <Modal
+        title={<h1 className="table-label">Add User</h1>}
+        open={openAddUserModal}
+        onOk={handleAddUserOk}
+        onCancel={handleAddUserCancel}
+      >
+        <AddUser
+          roles={roles}
+          form={addUserForm}
+          onFinish={onAddUserFinish}
+          onFinishFailed={onAddUserFinishFailed}
+        />
+      </Modal>
+      <Modal
+        key="editUserModal"
+        title={<h1 className="table-label">Edit User</h1>}
+        open={openEditUserModal}
+        onOk={handleEditUserOk}
+        onCancel={handleEditUserCancel}
+      >
+        <EditUser
+          roles={roles}
+          form={editUserForm}
+          onFinish={onEditUserFinish}
+          onFinishFailed={onEditUserFinishFailed}
+          editedUser={editedUser}
+        />
+      </Modal>
     </>
   );
 };

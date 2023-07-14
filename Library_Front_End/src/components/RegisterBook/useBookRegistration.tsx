@@ -55,32 +55,6 @@ export const useBookRegistration: () => RegistrationState = () => {
     });
   };
 
-  // const postBookRegistration = axios.create({
-  //   baseURL: `http://localhost:8080/api/book/registerBook`,
-  //   headers: {
-  //     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   if (bookTitle != "" || bookGenre != "") {
-  //     setIsLoading(true);
-  //     setError(undefined);
-  //     postBookRegistration
-  //       .post("", { bookTitle, bookGenre })
-  //       .then((res) => {
-  //         setBookRegistrationResCode(res.status);
-  //         setIsLoading(false);
-  //         setError(undefined);
-  //       })
-  //       .catch((error) => {
-  //         setBookRegistrationResCode(error["code"]);
-  //         setError(error);
-  //         setIsLoading(false);
-  //       });
-  //   }
-  // }, [registerBookButtonClick]);
-
   return {
     form,
     doBookRegistration,

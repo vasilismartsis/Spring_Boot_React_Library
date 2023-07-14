@@ -36,6 +36,7 @@ const Security = () => {
         You successfully changed your password!
       </span>
     );
+    ChangePasswordForm.resetFields();
   };
 
   const onError = (error: string) => {
@@ -98,6 +99,16 @@ const Security = () => {
           name="newPassword"
           rules={[
             { required: true, message: "Please input your new password!" },
+            {
+              validator: (_, value) => {
+                if (value && !isValidPassword(value)) {
+                  return Promise.reject(
+                    "Invalid password. It should contain at least 1 number, 1 character, 1 special character, and be at least 8 characters long."
+                  );
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input.Password
@@ -114,6 +125,16 @@ const Security = () => {
           name="confirmNewPassword"
           rules={[
             { required: true, message: "Please confirm your new password!" },
+            {
+              validator: (_, value) => {
+                if (value && !isValidPassword(value)) {
+                  return Promise.reject(
+                    "Invalid password. It should contain at least 1 number, 1 character, 1 special character, and be at least 8 characters long."
+                  );
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input.Password
