@@ -8,8 +8,8 @@ export type BookResource = {
 export type Book = {
         id: number;
         title: string;
-        genre: string;
         quantity: number;
+        genre: string;
         createdBy: string;
         lastModifiedBy: string;
         creationDate: Date;
@@ -25,3 +25,9 @@ export type ReserveRequest = {
     username: string;
     bookId: number;
 }
+
+export type AddBookForm = {
+    title: string;
+    quantity: number;
+    genre: string;
+  }

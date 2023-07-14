@@ -58,7 +58,7 @@ public class Book {
     @Temporal(TIMESTAMP)
     protected Date lastModifiedDate;
 
-    public Book(String title, Genre genre, int quantity) {
+    public Book(String title, int quantity, Genre genre) {
         this.title = title;
         this.genre = genre;
         this.quantity = quantity;

@@ -1,6 +1,6 @@
 package com.library.Library_Back_End.book;
 
-import com.library.Library_Back_End.book.dto.BookRegistrationRequest;
+import com.library.Library_Back_End.book.dto.AddBookRequest;
 import com.library.Library_Back_End.book.dto.BookResponse;
 import com.library.Library_Back_End.book.dto.SingleBookResponse;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
@@ -80,8 +80,10 @@ public class BookService {
         return bookConfiguration.genres();
     }
 
-    public void registerBook(BookRegistrationRequest bookRegistrationRequest) {
-        Book book = new Book(bookRegistrationRequest.getBookTitle(), bookRegistrationRequest.getBookGenre(), bookRegistrationRequest.getQuantity());
+    public void addBook(AddBookRequest addBookRequest) {
+        Book book = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre());
+        book.setCreatedBy(libraryUserRepository.findByUsername(addBookRequest.getCreatedBy()).orElseThrow());
+        book.setLastModifiedBy(libraryUserRepository.findByUsername(addBookRequest.getCreatedBy()).orElseThrow());
         bookRepository.save(book);
     }
 

@@ -11,6 +11,7 @@ import {
   Dropdown,
   Input,
   MenuProps,
+  Modal,
   Pagination,
   PaginationProps,
   Radio,
@@ -33,6 +34,8 @@ import {
   TablePaginationConfig,
   TableRowSelection,
 } from "antd/es/table/interface";
+import { useAddBook } from "./useAddBook";
+import AddBook from "./AddBook";
 
 const BookList: React.FC = () => {
   const [tableData, setTableData] = useState<Book[]>([]);
@@ -45,15 +48,25 @@ const BookList: React.FC = () => {
     setCurrentPage,
     currentPage,
     setGenres,
-    refetch,
+    bookRefetch,
     setSorterResult,
     setSearchColumn,
     setSearchValue,
   } = useBooks();
   const { doReserveBook } = useReserveBook();
 
+  const {
+    openAddBookModal,
+    addBookForm,
+    handleAddBook,
+    handleAddBookOk,
+    handleAddBookCancel,
+    onAddBookFinish,
+    onAddBookFinishFailed,
+  } = useAddBook();
+
   useEffect(() => {
-    refetch();
+    bookRefetch();
   }, []);
 
   useEffect(() => {
@@ -84,7 +97,7 @@ const BookList: React.FC = () => {
         You have succesfully reserved this book!
       </span>
     );
-    refetch();
+    bookRefetch();
   };
 
   const onReserveBookError = (error: string) => {
@@ -155,9 +168,15 @@ const BookList: React.FC = () => {
   ];
 
   const enhancedColumns: ColumnsType<Book> = columns.map((col) => {
+    const columnType =
+      books.length > 0
+        ? typeof (books[0] as any)[String(col.dataIndex)]
+        : "string";
+
     return {
       ...col,
       width: 200,
+      align: columnType == "number" ? "right" : "left",
       sorter: col.sortable ? true : false,
       filterDropdown: col.searchable
         ? ({ confirm }) => {
@@ -211,13 +230,15 @@ const BookList: React.FC = () => {
 
   return (
     <>
-      <Button
-        // onClick={handleAddBook}
-        type="primary"
-        style={{ marginBottom: 16 }}
-      >
-        Add a new book
-      </Button>
+      {sessionStorage.getItem("role") == "ADMIN" ? (
+        <Button
+          onClick={handleAddBook}
+          type="primary"
+          style={{ marginBottom: 16 }}
+        >
+          Add a new book
+        </Button>
+      ) : null}
       <Table<Book>
         columns={enhancedColumns}
         dataSource={tableData}
@@ -225,6 +246,19 @@ const BookList: React.FC = () => {
         bordered={true}
         onChange={onChange}
       />
+      <Modal
+        title={<h1 className="table-label">Add Book</h1>}
+        open={openAddBookModal}
+        onOk={handleAddBookOk}
+        onCancel={handleAddBookCancel}
+      >
+        <AddBook
+          genres={genres}
+          form={addBookForm}
+          onFinish={onAddBookFinish}
+          onFinishFailed={onAddBookFinishFailed}
+        />
+      </Modal>
     </>
   );
 };

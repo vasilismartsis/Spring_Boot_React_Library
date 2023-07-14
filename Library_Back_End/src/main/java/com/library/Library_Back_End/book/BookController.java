@@ -1,6 +1,6 @@
 package com.library.Library_Back_End.book;
 
-import com.library.Library_Back_End.book.dto.BookRegistrationRequest;
+import com.library.Library_Back_End.book.dto.AddBookRequest;
 import com.library.Library_Back_End.book.dto.BookResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +40,8 @@ public class BookController {
         return bookService.getGenres();
     }
 
-    @PostMapping("/registerBook")
-    public void registerBook(@RequestBody BookRegistrationRequest bookRegistrationRequest) {
-        bookService.registerBook(bookRegistrationRequest);
+    @PostMapping("/addBook")
+    public void addBook(@RequestBody AddBookRequest addBookRequest) {
+        bookService.addBook(addBookRequest);
     }
 }
