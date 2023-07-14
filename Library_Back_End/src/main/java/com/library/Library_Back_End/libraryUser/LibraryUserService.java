@@ -89,10 +89,12 @@ public class LibraryUserService implements UserDetailsService {
             libraryUser.setUsername(updateLibraryUserRequest.getUsername());
             libraryUser.setPassword(passwordEncoder.encode(updateLibraryUserRequest.getPassword()));
             libraryUser.setRoles(roles);
+            libraryUser.setLastModifiedBy(libraryUserRepository.findByUsername(updateLibraryUserRequest.getLastModifiedBy()).orElseThrow());
             libraryUserRepository.save(libraryUser);
 
             return HttpStatus.OK;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return HttpStatus.CONFLICT;
         }
     }
@@ -114,10 +116,23 @@ public class LibraryUserService implements UserDetailsService {
             libraryUserRepository.save(libraryUser);
 
             return HttpStatus.OK;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return HttpStatus.CONFLICT;
         }
     }
+
+@Transactional
+public HttpStatus deleteUser(DeleteLibraryUserRequest deleteLibraryUserRequest)
+{
+    try{
+        libraryUserRepository.deleteById(deleteLibraryUserRequest.getId());
+        return HttpStatus.OK;
+    }
+    catch (Exception e) {
+        return HttpStatus.CONFLICT;
+    }
+}
 
     public LibraryUserResponse getUsers(List<String> selectedRoles, int page, String order, String sortedColumn, String searchColumn, String searchValue) {
         long totalLibraryUserNumber = libraryUserRepository.count();

@@ -1,9 +1,6 @@
 package com.library.Library_Back_End.libraryUser;
 
-import com.library.Library_Back_End.libraryUser.dto.AddLibraryUserRequest;
-import com.library.Library_Back_End.libraryUser.dto.ChangePasswordRequest;
-import com.library.Library_Back_End.libraryUser.dto.LibraryUserResponse;
-import com.library.Library_Back_End.libraryUser.dto.UpdateLibraryUserRequest;
+import com.library.Library_Back_End.libraryUser.dto.*;
 import com.library.Library_Back_End.login.dto.LoginAuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,6 +45,11 @@ public class LibraryUserController {
     @PostMapping("/addUser")
     public HttpStatus updateUser(@RequestBody AddLibraryUserRequest addLibraryUserRequest) {
         return libraryUserService.addUser(addLibraryUserRequest);
+    }
+
+    @PostMapping("/deleteUser")
+    public HttpStatus deleteUser(@RequestBody DeleteLibraryUserRequest deleteLibraryUserRequest) {
+        return libraryUserService.deleteUser(deleteLibraryUserRequest);
     }
 
     @PostMapping("/changePassword")

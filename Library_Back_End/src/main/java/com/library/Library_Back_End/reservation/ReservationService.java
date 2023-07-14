@@ -2,9 +2,10 @@ package com.library.Library_Back_End.reservation;
 
 import com.library.Library_Back_End.book.Book;
 import com.library.Library_Back_End.book.BookRepository;
+import com.library.Library_Back_End.libraryUser.LibraryUser;
 import com.library.Library_Back_End.libraryUser.LibraryUserConfiguration;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
-import com.library.Library_Back_End.reservation.dto.ReservationRequest;
+import com.library.Library_Back_End.reservation.dto.ReserveRequest;
 import com.library.Library_Back_End.reservation.dto.ReservationResponse;
 import com.library.Library_Back_End.reservation.dto.SingleReservationResponse;
 import org.springframework.data.domain.Page;
@@ -12,12 +13,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -72,9 +73,27 @@ public class ReservationService {
     }
 
     @Transactional
-    public void reserve(ReservationRequest reservationRequest) {
-        Book book = bookRepository.findById(reservationRequest.getBookId()).orElseThrow();
-        Reservation reservation = new Reservation(libraryUserRepository.findByUsername(reservationRequest.getUsername()).orElseThrow(), book);
-        reservationRepository.save(reservation);
+    public ResponseEntity<String> reserve(ReserveRequest reserveRequest) {
+        try {
+            LibraryUser libraryUser = libraryUserRepository.findByUsername(reserveRequest.getUsername()).orElseThrow();
+            Book book = bookRepository.findById(reserveRequest.getBookId()).orElseThrow();
+
+            if (book.getQuantity() > 0) {
+                Reservation reservation = new Reservation(libraryUser, book);
+                decreaseBookQuantity(book);
+                reservationRepository.save(reservation);
+                return ResponseEntity.ok("OK");
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book out of stock");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
+    public void decreaseBookQuantity(Book book){
+        book.setQuantity(book.getQuantity() - 1);
+        bookRepository.save(book);
     }
 }

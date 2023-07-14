@@ -5,6 +5,7 @@ import com.library.Library_Back_End.reservation.Reservation;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -20,6 +21,7 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @Table
 @Data
 @EqualsAndHashCode
+@NoArgsConstructor
 public class Book {
     @Id
     @SequenceGenerator(
@@ -37,6 +39,8 @@ public class Book {
     private String title;
     @Column
     private Genre genre;
+    @Column
+    private int quantity;
     @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reservation> reservations;
     @ManyToOne
@@ -54,17 +58,9 @@ public class Book {
     @Temporal(TIMESTAMP)
     protected Date lastModifiedDate;
 
-    public Book() {
-    }
-
-    public Book(long id, String title, Genre genre) {
-        this.id = id;
+    public Book(String title, Genre genre, int quantity) {
         this.title = title;
         this.genre = genre;
-    }
-
-    public Book(String title, Genre genre) {
-        this.title = title;
-        this.genre = genre;
+        this.quantity = quantity;
     }
 }

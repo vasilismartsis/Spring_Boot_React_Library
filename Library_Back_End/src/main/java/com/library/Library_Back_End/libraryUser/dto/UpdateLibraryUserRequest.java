@@ -12,8 +12,5 @@ public class UpdateLibraryUserRequest {
     private String username;
     private String password;
     private List<RoleEnum> roles;
-    private String createdByName;
-    private String lastModifiedByName;
-    private Date creationDate;
-    private Date lastModifiedDate;
+    private String lastModifiedBy;
 }

@@ -64,7 +64,8 @@ public class BookService {
                         entity.getLastModifiedDate(),
                         entity.getId(),
                         entity.getTitle(),
-                        entity.getGenre()
+                        entity.getGenre(),
+                        entity.getQuantity()
                 ))
                 .toList();
 
@@ -80,7 +81,7 @@ public class BookService {
     }
 
     public void registerBook(BookRegistrationRequest bookRegistrationRequest) {
-        Book book = new Book(bookRegistrationRequest.getBookTitle(), bookRegistrationRequest.getBookGenre());
+        Book book = new Book(bookRegistrationRequest.getBookTitle(), bookRegistrationRequest.getBookGenre(), bookRegistrationRequest.getQuantity());
         bookRepository.save(book);
     }
 

@@ -22,7 +22,6 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @Data
 @EqualsAndHashCode
 public class Reservation {
-
     @Id
     @SequenceGenerator(
             name = "reservation_sequence",

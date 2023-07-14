@@ -1,14 +1,11 @@
 package com.library.Library_Back_End.reservation;
 
-import com.library.Library_Back_End.reservation.dto.ReservationRequest;
+import com.library.Library_Back_End.reservation.dto.ReserveRequest;
 import com.library.Library_Back_End.reservation.dto.ReservationResponse;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping(path = "api/reservation")
@@ -30,7 +27,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reserve")
-    public void reserve(@RequestBody ReservationRequest reservationRequest) {
-        reservationService.reserve(reservationRequest);
+    public ResponseEntity<?> reserve(@RequestBody ReserveRequest reserveRequest) {
+        return reservationService.reserve(reserveRequest);
     }
 }
