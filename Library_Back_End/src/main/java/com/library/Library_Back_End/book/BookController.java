@@ -23,6 +23,7 @@ public class BookController {
     @GetMapping("/getBooks")
     public BookResponse getBooks(
             @RequestParam ArrayList<String> genres,
+            @RequestParam int pageSize,
             @RequestParam int page,
             @RequestParam String order,
             @RequestParam String sortedColumn,
@@ -30,7 +31,7 @@ public class BookController {
             @RequestParam String searchValue
     ) {
 
-        return bookService.getBooks(genres, page, order, sortedColumn, searchColumn, searchValue);
+        return bookService.getBooks(genres, pageSize, page, order, sortedColumn, searchColumn, searchValue);
     }
 
     @GetMapping("/getGenres")
