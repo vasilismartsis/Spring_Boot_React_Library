@@ -24,7 +24,7 @@ export const useEditBook: () => useEditBookState = () => {
   const {
     totalBookNumber,
     books,
-    error: bookError,
+    bookError: bookError,
     setCurrentPage,
     currentPage,
     setGenres,
@@ -33,7 +33,7 @@ export const useEditBook: () => useEditBookState = () => {
     setSearchColumn,
     setSearchValue,
     doEditBook,
-  } = useBooks();
+  } = useBooks(5);
 
   useEffect(() => {
     if (Object.keys(editedBook).length > 0) {

@@ -1,5 +1,4 @@
 import BookList from "./BookList";
-import "./Book.css";
 
 export interface BookProps {}
 
