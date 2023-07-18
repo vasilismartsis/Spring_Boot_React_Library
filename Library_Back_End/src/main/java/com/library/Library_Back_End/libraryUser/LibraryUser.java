@@ -68,11 +68,4 @@ public class LibraryUser {
         this.createdBy = createdBy;
         this.lastModifiedBy = lastModifiedBy;
     }
-
-    public LibraryUser(String username, String password, List<Role> roles, LibraryUser lastModifiedBy) {
-        this.username = username;
-        this.password = password;
-        this.roles = roles;
-        this.lastModifiedBy = lastModifiedBy;
-    }
 }

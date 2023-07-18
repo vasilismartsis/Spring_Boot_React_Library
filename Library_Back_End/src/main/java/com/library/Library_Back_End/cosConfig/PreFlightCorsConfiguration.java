@@ -16,7 +16,7 @@ public class PreFlightCorsConfiguration {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration().applyPermitDefaultValues();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://192.168.101.46:3000/"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://192.168.101.58:3000/"));
         config.setExposedHeaders(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.addAllowedMethod(HttpMethod.GET);

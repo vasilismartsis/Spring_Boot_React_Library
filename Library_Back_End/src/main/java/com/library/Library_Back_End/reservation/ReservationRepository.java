@@ -1,5 +1,6 @@
 package com.library.Library_Back_End.reservation;
 
+import com.library.Library_Back_End.libraryUser.LibraryUser;
 import jakarta.persistence.Id;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,4 +13,6 @@ import java.util.Optional;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     Page<Reservation> findAll(Specification<Reservation> reservationSpecification, Pageable pageable);
+
+    Page<Reservation> findAllByLibraryUser(LibraryUser libraryUser, Pageable pageable);
 }

@@ -1,5 +1,6 @@
 package com.library.Library_Back_End.reservation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.library.Library_Back_End.book.Book;
 import com.library.Library_Back_End.libraryUser.LibraryUser;
 import jakarta.persistence.*;
@@ -56,10 +57,10 @@ public class Reservation {
     @Temporal(TIMESTAMP)
     protected Date lastModifiedDate;
 
-    public Reservation(LibraryUser libraryUser, Book book) {
+    public Reservation(LibraryUser libraryUser, Book book, LibraryUser createdBy, LibraryUser lastModifiedBy) {
         this.libraryUser = libraryUser;
         this.book = book;
-        this.reservationDate = LocalDate.now();
-        this.expirationDate = LocalDate.now().plusDays(7);
+        this.createdBy = createdBy;
+        this.lastModifiedBy = lastModifiedBy;
     }
 }

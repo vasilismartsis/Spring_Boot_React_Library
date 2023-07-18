@@ -1,15 +1,14 @@
 package com.library.Library_Back_End.libraryUser;
 
+import com.library.Library_Back_End.auditing.AuditingConfig;
+import com.library.Library_Back_End.auditing.SpringSecurityAuditorAware;
 import com.library.Library_Back_End.libraryUser.dto.*;
 import com.library.Library_Back_End.login.LoginService;
 import com.library.Library_Back_End.login.dto.LoginAuthResponse;
 import com.library.Library_Back_End.login.dto.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,25 +23,26 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class LibraryUserService implements UserDetailsService {
     private final LibraryUserRepository libraryUserRepository;
     private final LibraryUserConfiguration libraryUserConfiguration;
-
     private final LibraryUserSpecifications libraryUserSpecifications;
-
     private final LoginService loginService;
+    private final AuditingConfig auditingConfig;
 
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LibraryUserService(LibraryUserRepository libraryUserRepository, LibraryUserConfiguration libraryUserConfiguration, @Lazy LoginService loginService, PasswordEncoder passwordEncoder) {
+    public LibraryUserService(LibraryUserRepository libraryUserRepository, LibraryUserConfiguration libraryUserConfiguration, @Lazy LoginService loginService, PasswordEncoder passwordEncoder, AuditingConfig auditingConfig) {
         this.libraryUserRepository = libraryUserRepository;
         this.libraryUserConfiguration = libraryUserConfiguration;
         this.loginService = loginService;
         this.passwordEncoder = passwordEncoder;
+        this.auditingConfig = auditingConfig;
         libraryUserSpecifications = new LibraryUserSpecifications();
         saveDummyLibraryUsers();
     }
@@ -59,6 +59,14 @@ public class LibraryUserService implements UserDetailsService {
 
     public void saveDummyLibraryUsers() {
         libraryUserRepository.saveAll(libraryUserConfiguration.libraryUsers());
+        List<LibraryUser> libraryUsers = libraryUserRepository.findAll();
+        List<LibraryUser> updatedLibraryUsers = libraryUsers.stream()
+                .peek(user -> {
+                    user.setCreatedBy(libraryUserRepository.findByUsername("System").orElseThrow());
+                    user.setLastModifiedBy(libraryUserRepository.findByUsername("System").orElseThrow());
+                })
+                .collect(Collectors.toList());
+        libraryUserRepository.saveAll(updatedLibraryUsers);
     }
 
     @Transactional
@@ -77,30 +85,9 @@ public class LibraryUserService implements UserDetailsService {
             return new ResponseEntity<>(new LoginAuthResponse("Wrong Current Password!"), HttpStatus.UNAUTHORIZED);
         }
     }
-    
-    @Transactional
-    public HttpStatus updateUser(UpdateLibraryUserRequest updateLibraryUserRequest){
-        try {
-            List<Role> roles = updateLibraryUserRequest.getRoles().stream()
-                    .map(roleEnum -> new Role(roleEnum))
-                    .collect(Collectors.toList());
-
-            LibraryUser libraryUser = libraryUserRepository.findById(updateLibraryUserRequest.getId()).orElseThrow();
-            libraryUser.setUsername(updateLibraryUserRequest.getUsername());
-            libraryUser.setPassword(passwordEncoder.encode(updateLibraryUserRequest.getPassword()));
-            libraryUser.setRoles(roles);
-            libraryUser.setLastModifiedBy(libraryUserRepository.findByUsername(updateLibraryUserRequest.getLastModifiedBy()).orElseThrow());
-            libraryUserRepository.save(libraryUser);
-
-            return HttpStatus.OK;
-        }
-        catch (Exception e) {
-            return HttpStatus.CONFLICT;
-        }
-    }
 
     @Transactional
-    public HttpStatus addUser(AddLibraryUserRequest addLibraryUserRequest){
+    public ResponseEntity<String> addUser(AddLibraryUserRequest addLibraryUserRequest) {
         try {
             List<Role> roles = addLibraryUserRequest.getRoles().stream()
                     .map(roleEnum -> new Role(roleEnum))
@@ -110,29 +97,45 @@ public class LibraryUserService implements UserDetailsService {
                     addLibraryUserRequest.getUsername(),
                     passwordEncoder.encode(addLibraryUserRequest.getPassword()),
                     roles,
-                    libraryUserRepository.findByUsername(addLibraryUserRequest.getCreatedBy()).orElseThrow(),
-                    libraryUserRepository.findByUsername(addLibraryUserRequest.getLastModifiedBy()).orElseThrow()
+                    auditingConfig.getAuditor(),
+                    auditingConfig.getAuditor()
             );
             libraryUserRepository.save(libraryUser);
 
-            return HttpStatus.OK;
-        }
-        catch (Exception e) {
-            return HttpStatus.CONFLICT;
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
         }
     }
 
-@Transactional
-public HttpStatus deleteUser(DeleteLibraryUserRequest deleteLibraryUserRequest)
-{
-    try{
-        libraryUserRepository.deleteById(deleteLibraryUserRequest.getId());
-        return HttpStatus.OK;
+    @Transactional
+    public ResponseEntity<String> editUser(EditLibraryUserRequest editLibraryUserRequest) {
+        try {
+            List<Role> roles = editLibraryUserRequest.getRoles().stream()
+                    .map(roleEnum -> new Role(roleEnum))
+                    .collect(Collectors.toList());
+            LibraryUser libraryUser = libraryUserRepository.findById(editLibraryUserRequest.getId()).orElseThrow();
+            libraryUser.setUsername(editLibraryUserRequest.getUsername());
+            libraryUser.setPassword(passwordEncoder.encode(editLibraryUserRequest.getPassword()));
+            libraryUser.setRoles(roles);
+            libraryUser.setLastModifiedBy(auditingConfig.getAuditor());
+            libraryUserRepository.save(libraryUser);
+
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
     }
-    catch (Exception e) {
-        return HttpStatus.CONFLICT;
+
+    @Transactional
+    public ResponseEntity<String> deleteUser(DeleteLibraryUserRequest deleteLibraryUserRequest) {
+        try {
+            libraryUserRepository.deleteById(deleteLibraryUserRequest.getId());
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
     }
-}
 
     public LibraryUserResponse getUsers(List<String> selectedRoles, int page, String order, String sortedColumn, String searchColumn, String searchValue) {
         long totalLibraryUserNumber = libraryUserRepository.count();
@@ -162,18 +165,18 @@ public HttpStatus deleteUser(DeleteLibraryUserRequest deleteLibraryUserRequest)
         List<SingleLibraryUserResponse> singleLibraryUserResponse = libraryUserPage
                 .stream()
                 .map(entity -> new SingleLibraryUserResponse(
-                        entity.getCreatedBy() != null ? libraryUserRepository.findById(entity.getCreatedBy().getId()).orElseThrow().getUsername() : null,
-                        entity.getLastModifiedBy() != null ? libraryUserRepository.findById(entity.getLastModifiedBy().getId()).orElseThrow().getUsername() : null,
-                        entity.getCreationDate(),
-                        entity.getLastModifiedDate(),
-                        entity.getId(),
-                        entity.getUsername(),
-                        entity.getPassword(),
-                        entity.getRoles().stream()
-                                .map(Role::getRole)
-                                .collect(Collectors.toList())
+                                entity.getCreatedBy() != null ? libraryUserRepository.findById(entity.getCreatedBy().getId()).orElseThrow().getUsername() : null,
+                                entity.getLastModifiedBy() != null ? libraryUserRepository.findById(entity.getLastModifiedBy().getId()).orElseThrow().getUsername() : null,
+                                entity.getCreationDate(),
+                                entity.getLastModifiedDate(),
+                                entity.getId(),
+                                entity.getUsername(),
+                                entity.getPassword(),
+                                entity.getRoles().stream()
+                                        .map(Role::getRole)
+                                        .collect(Collectors.toList())
                         )
-                    )
+                )
                 .toList();
 
         return new LibraryUserResponse(totalLibraryUserNumber, singleLibraryUserResponse);

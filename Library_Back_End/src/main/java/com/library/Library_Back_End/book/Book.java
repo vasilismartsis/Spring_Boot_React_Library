@@ -3,9 +3,7 @@ package com.library.Library_Back_End.book;
 import com.library.Library_Back_End.libraryUser.LibraryUser;
 import com.library.Library_Back_End.reservation.Reservation;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -19,9 +17,10 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table
-@Data
 @EqualsAndHashCode
 @NoArgsConstructor
+@Getter
+@Setter
 public class Book {
     @Id
     @SequenceGenerator(
@@ -33,14 +32,13 @@ public class Book {
             strategy = GenerationType.SEQUENCE,
             generator = "book_sequence"
     )
-    @Column
     private long id;
     @Column
     private String title;
     @Column
-    private Genre genre;
-    @Column
     private int quantity;
+    @Column
+    private Genre genre;
     @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reservation> reservations;
     @ManyToOne
@@ -60,7 +58,15 @@ public class Book {
 
     public Book(String title, int quantity, Genre genre) {
         this.title = title;
-        this.genre = genre;
         this.quantity = quantity;
+        this.genre = genre;
+    }
+
+    public Book(String title, int quantity, Genre genre, LibraryUser createdBy, LibraryUser lastModifiedBy) {
+        this.title = title;
+        this.quantity = quantity;
+        this.genre = genre;
+        this.createdBy = createdBy;
+        this.lastModifiedBy = lastModifiedBy;
     }
 }

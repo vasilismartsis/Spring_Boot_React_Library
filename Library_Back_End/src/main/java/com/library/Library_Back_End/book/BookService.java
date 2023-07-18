@@ -1,8 +1,7 @@
 package com.library.Library_Back_End.book;
 
-import com.library.Library_Back_End.book.dto.AddBookRequest;
-import com.library.Library_Back_End.book.dto.BookResponse;
-import com.library.Library_Back_End.book.dto.SingleBookResponse;
+import com.library.Library_Back_End.auditing.AuditingConfig;
+import com.library.Library_Back_End.book.dto.*;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,12 +25,14 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookConfiguration bookConfiguration;
     private final BookSpecifications bookSpecifications;
+    private final AuditingConfig auditingConfig;
 
     @Autowired
-    public BookService(BookRepository bookRepository, BookConfiguration bookConfiguration, LibraryUserRepository libraryUserRepository) {
+    public BookService(BookRepository bookRepository, BookConfiguration bookConfiguration, LibraryUserRepository libraryUserRepository, AuditingConfig auditingConfig) {
         this.bookRepository = bookRepository;
         this.bookConfiguration = bookConfiguration;
         this.libraryUserRepository = libraryUserRepository;
+        this.auditingConfig = auditingConfig;
         bookSpecifications = new BookSpecifications();
     }
 
@@ -72,19 +75,46 @@ public class BookService {
         return new BookResponse(totalBookNumber, singleBookResource);
     }
 
-    public void saveDummyBooks() {
-        bookRepository.saveAll(bookConfiguration.books());
-    }
+//    public void saveDummyBooks() {
+//        bookRepository.saveAll(bookConfiguration.books());
+//    }
 
     public Genre[] getGenres() {
         return bookConfiguration.genres();
     }
 
-    public void addBook(AddBookRequest addBookRequest) {
-        Book book = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre());
-        book.setCreatedBy(libraryUserRepository.findByUsername(addBookRequest.getCreatedBy()).orElseThrow());
-        book.setLastModifiedBy(libraryUserRepository.findByUsername(addBookRequest.getCreatedBy()).orElseThrow());
-        bookRepository.save(book);
+    public ResponseEntity<String> addBook(AddBookRequest addBookRequest) {
+        try {
+            Book book = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre(), auditingConfig.getAuditor(), auditingConfig.getAuditor());
+            bookRepository.save(book);
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
+    public ResponseEntity<String> editBook(EditBookRequest editBookRequest) {
+        try {
+            Book book = bookRepository.findById(editBookRequest.getId()).orElseThrow();
+            book.setTitle(editBookRequest.getTitle());
+            book.setQuantity(editBookRequest.getQuantity());
+            book.setGenre(editBookRequest.getGenre());
+            book.setCreatedBy(auditingConfig.getAuditor());
+            book.setLastModifiedBy(auditingConfig.getAuditor());
+            bookRepository.save(book);
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
+    public ResponseEntity<String> deleteBook(DeleteBookRequest deleteBookRequest) {
+        try {
+            bookRepository.deleteById(deleteBookRequest.getId());
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
     }
 
 }

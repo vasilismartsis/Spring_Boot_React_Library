@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -37,18 +36,18 @@ public class LibraryUserController {
         return libraryUserService.getRoles();
     }
 
-    @PostMapping("/updateUser")
-    public HttpStatus updateUser(@RequestBody UpdateLibraryUserRequest updateLibraryUserRequest) {
-        return libraryUserService.updateUser(updateLibraryUserRequest);
+    @PostMapping("/editUser")
+    public ResponseEntity<String> editUser(@RequestBody EditLibraryUserRequest editLibraryUserRequest) {
+        return libraryUserService.editUser(editLibraryUserRequest);
     }
 
     @PostMapping("/addUser")
-    public HttpStatus updateUser(@RequestBody AddLibraryUserRequest addLibraryUserRequest) {
+    public ResponseEntity<String> addUser(@RequestBody AddLibraryUserRequest addLibraryUserRequest) {
         return libraryUserService.addUser(addLibraryUserRequest);
     }
 
     @PostMapping("/deleteUser")
-    public HttpStatus deleteUser(@RequestBody DeleteLibraryUserRequest deleteLibraryUserRequest) {
+    public ResponseEntity<String> deleteUser(@RequestBody DeleteLibraryUserRequest deleteLibraryUserRequest) {
         return libraryUserService.deleteUser(deleteLibraryUserRequest);
     }
 

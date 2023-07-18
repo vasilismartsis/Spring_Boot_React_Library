@@ -1,5 +1,6 @@
 package com.library.Library_Back_End.book;
 
+import com.library.Library_Back_End.libraryUser.LibraryUser;
 import io.micrometer.common.lang.NonNullApi;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
@@ -13,9 +14,12 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @NonNullApi
 public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findAll(Specification<Book> bookSpecification, Pageable pageable);
+
+    Optional<Book> findByTitle(String title);
 }

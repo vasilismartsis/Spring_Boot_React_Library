@@ -16,6 +16,11 @@ public class LibraryUserConfiguration {
     public ArrayList<LibraryUser> libraryUsers() {
         ArrayList<LibraryUser> libraryUsers = new ArrayList<LibraryUser>();
         libraryUsers.add(new LibraryUser(
+                "System",
+                passwordEncoder.encode("system"),
+                List.of(new Role(RoleEnum.ADMIN))
+        ));
+        libraryUsers.add(new LibraryUser(
                 "user",
                 passwordEncoder.encode("password"),
                 List.of(new Role(RoleEnum.CUSTOMER))

@@ -2,6 +2,7 @@ package com.library.Library_Back_End.auditing;
 
 import com.library.Library_Back_End.libraryUser.LibraryUser;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;

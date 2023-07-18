@@ -1,9 +1,13 @@
 package com.library.Library_Back_End.reservation;
 
-import com.library.Library_Back_End.reservation.dto.ReserveRequest;
+import com.library.Library_Back_End.libraryUser.dto.AddLibraryUserRequest;
+import com.library.Library_Back_End.libraryUser.dto.DeleteLibraryUserRequest;
+import com.library.Library_Back_End.libraryUser.dto.EditLibraryUserRequest;
+import com.library.Library_Back_End.reservation.dto.AddReservationRequest;
+import com.library.Library_Back_End.reservation.dto.DeleteReservationRequest;
+import com.library.Library_Back_End.reservation.dto.EditReservationRequest;
 import com.library.Library_Back_End.reservation.dto.ReservationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,16 +22,29 @@ public class ReservationController {
     }
 
     @GetMapping("/getReservations")
-    public ReservationResponse getReservations(@RequestParam int page,
-                                               @RequestParam String order,
-                                               @RequestParam String sortedColumn,
-                                               @RequestParam String searchColumn,
-                                               @RequestParam String searchValue) {
-        return reservationService.getReservations(page, order, sortedColumn, searchColumn, searchValue);
+    public ReservationResponse getReservations(
+            @RequestParam String user,
+            @RequestParam int page,
+            @RequestParam String order,
+            @RequestParam String sortedColumn,
+            @RequestParam String searchColumn,
+            @RequestParam String searchValue
+    ) {
+        return reservationService.getReservations(user, page, order, sortedColumn, searchColumn, searchValue);
     }
 
-    @PostMapping("/reserve")
-    public ResponseEntity<?> reserve(@RequestBody ReserveRequest reserveRequest) {
-        return reservationService.reserve(reserveRequest);
+    @PostMapping("/addReservation")
+    public ResponseEntity<?> addReservation(@RequestBody AddReservationRequest addReservationRequest) {
+        return reservationService.addReservation(addReservationRequest);
+    }
+
+    @PostMapping("/editReservation")
+    public ResponseEntity<String> editReservation(@RequestBody EditReservationRequest editReservationRequest) {
+        return reservationService.editReservation(editReservationRequest);
+    }
+
+    @PostMapping("/deleteReservation")
+    public ResponseEntity<String> deleteReservation(@RequestBody DeleteReservationRequest deleteReservationRequest) {
+        return reservationService.deleteReservation(deleteReservationRequest);
     }
 }
