@@ -27,11 +27,15 @@ export const useReserveBook: () => ReserveBookState = () => {
   const postReserveBook = (values: ReserveRequest) => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
-    return axios.post(`http://${ip}:8080/api/reservation/reserve`, values, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-    });
+    return axios.post(
+      `http://${ip}:8080/api/reservation/addReservation`,
+      values,
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      }
+    );
   };
 
   const ReserveBookMutation = useMutation("ReserveBookQuery", postReserveBook);

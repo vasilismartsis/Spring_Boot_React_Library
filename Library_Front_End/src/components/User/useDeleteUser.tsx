@@ -27,7 +27,7 @@ export const useDeleteUser: () => useDeleteUserState = () => {
     setSorterResult,
     setSearchColumn,
     setSearchValue,
-    doUpdateUser,
+    doEditUser,
     doDeleteUser,
     setSelectedRoles,
   } = useUsers();
@@ -39,7 +39,7 @@ export const useDeleteUser: () => useDeleteUserState = () => {
   const onDeleteUserSuccess = () => {
     userRefetch();
     message.info(
-      <span style={{ fontSize: "30px" }}>User deleteed successfully</span>
+      <span style={{ fontSize: "30px" }}>User deleted successfully</span>
     );
   };
 

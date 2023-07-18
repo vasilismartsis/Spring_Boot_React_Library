@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, MenuProps, Pagination, Space, message } from "antd";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
 import { Reservation, ReservationResource } from "./types";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { SorterResult } from "antd/es/table/interface";
 import { Book } from "../Book/types";
 
@@ -13,12 +13,22 @@ export interface ReservationsState {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
   error?: any;
-  refetch: () => void;
+  reservationRefetch: () => void;
   setSorterResult: React.Dispatch<
     React.SetStateAction<SorterResult<Reservation>>
   >;
   setSearchColumn: React.Dispatch<React.SetStateAction<string>>;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
+  doEditReservation: (
+    data: Reservation,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => void;
+  doDeleteReservation: (
+    data: Reservation,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => void;
 }
 
 export const useReservations: () => ReservationsState = () => {
@@ -32,11 +42,16 @@ export const useReservations: () => ReservationsState = () => {
   const [searchColumn, setSearchColumn] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
 
+  //Get reservations
   const getReservations = () => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
     return axios.get(
-      `http://${ip}:8080/api/reservation/getReservations?page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.columnKey}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+      `http://${ip}:8080/api/reservation/getReservations?user=${sessionStorage.getItem(
+        "username"
+      )}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${
+        sorterResult.columnKey
+      }&searchColumn=${searchColumn}&searchValue=${searchValue}`,
       {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -45,21 +60,95 @@ export const useReservations: () => ReservationsState = () => {
     );
   };
 
-  const { error, refetch } = useQuery("getReservations", getReservations, {
-    enabled: false,
-    onSuccess: (res) => {
-      setTotalReservationNumber(
-        () => (res.data as ReservationResource).totalReservationNumber
-      );
-      setReservations(
-        () => (res.data as ReservationResource).singleReservationResponse
-      );
-    },
-  });
+  const { error, refetch: reservationRefetch } = useQuery(
+    "getReservations",
+    getReservations,
+    {
+      enabled: false,
+      onSuccess: (res) => {
+        setTotalReservationNumber(
+          () => (res.data as ReservationResource).totalReservationNumber
+        );
+        setReservations(
+          () => (res.data as ReservationResource).singleReservationResponse
+        );
+      },
+    }
+  );
 
   useEffect(() => {
-    refetch();
+    reservationRefetch();
   }, [currentPage, sorterResult, searchValue, searchColumn]);
+
+  //Edit reservation
+  const postEditReservation = (values: Reservation) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.post(
+      `http://${ip}:8080/api/reservation/editReservation`,
+      values,
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      }
+    );
+  };
+
+  const editReservationMutation = useMutation(
+    "editReservationQuery",
+    postEditReservation
+  );
+
+  const doEditReservation = (
+    values: Reservation,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => {
+    editReservationMutation.mutate(values, {
+      onSuccess,
+      onError: (error) => {
+        onError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      },
+    });
+  };
+
+  //Delete reservation
+  const postDeleteReservation = (values: Reservation) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.post(
+      `http://${ip}:8080/api/reservation/deleteReservation`,
+      values,
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      }
+    );
+  };
+
+  const deleteReservationMutation = useMutation(
+    "deleteReservationQuery",
+    postDeleteReservation
+  );
+
+  const doDeleteReservation = (
+    values: Reservation,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => {
+    deleteReservationMutation.mutate(values, {
+      onSuccess,
+      onError: (error) => {
+        onError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      },
+    });
+  };
 
   return {
     totalReservationNumber,
@@ -67,9 +156,11 @@ export const useReservations: () => ReservationsState = () => {
     setCurrentPage,
     currentPage,
     error,
-    refetch,
+    reservationRefetch,
     setSorterResult,
     setSearchColumn,
     setSearchValue,
+    doEditReservation,
+    doDeleteReservation,
   };
 };

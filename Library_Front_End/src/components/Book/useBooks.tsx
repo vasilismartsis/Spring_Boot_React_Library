@@ -28,6 +28,16 @@ export interface BooksState {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => void;
+  doEditBook: (
+    data: Book,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => void;
+  doDeleteBook: (
+    data: Book,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => void;
 }
 
 export const useBooks: () => BooksState = () => {
@@ -93,6 +103,62 @@ export const useBooks: () => BooksState = () => {
     });
   };
 
+  //Edit Book
+  const postEditBook = (values: Book) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.post(`http://${ip}:8080/api/book/editBook`, values, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+  };
+
+  const editBookMutation = useMutation("editBookQuery", postEditBook);
+
+  const doEditBook = (
+    values: Book,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => {
+    editBookMutation.mutate(values, {
+      onSuccess,
+      onError: (error) => {
+        onError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      },
+    });
+  };
+
+  //Delete Book
+  const postDeleteBook = (values: Book) => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.post(`http://${ip}:8080/api/book/deleteBook`, values, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+  };
+
+  const deleteBookMutation = useMutation("deleteBookQuery", postDeleteBook);
+
+  const doDeleteBook = (
+    values: Book,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => {
+    deleteBookMutation.mutate(values, {
+      onSuccess,
+      onError: (error) => {
+        onError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      },
+    });
+  };
+
   return {
     totalBookNumber,
     books,
@@ -105,5 +171,7 @@ export const useBooks: () => BooksState = () => {
     setSearchColumn,
     setSearchValue,
     doAddBook,
+    doEditBook,
+    doDeleteBook,
   };
 };

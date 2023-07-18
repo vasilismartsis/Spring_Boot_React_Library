@@ -31,3 +31,9 @@ export type AddBookForm = {
     quantity: number;
     genre: string;
   }
+  
+export type EditBookForm = {
+  title: string;
+  quantity: number;
+  genre: string;
+}

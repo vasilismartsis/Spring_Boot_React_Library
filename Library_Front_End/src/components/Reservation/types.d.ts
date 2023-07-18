@@ -21,3 +21,10 @@ export interface ReservationColumn extends ColumnType<Reservation> {
   searchable?: boolean;
   sortable?: boolean;
 }
+
+export type EditReservationForm = {
+  username: string;
+  bookTitle: string;
+  reservationDate: Date;
+  expirationDate: Date;
+}

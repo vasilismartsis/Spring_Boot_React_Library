@@ -14,6 +14,7 @@ import {
   Modal,
   Pagination,
   PaginationProps,
+  Popconfirm,
   Radio,
   Space,
   Table,
@@ -34,8 +35,18 @@ import {
   TablePaginationConfig,
   TableRowSelection,
 } from "antd/es/table/interface";
+import { CSVLink } from "react-csv";
 import { useAddBook } from "./useAddBook";
 import AddBook from "./AddBook";
+import { useEditBook } from "./useEditBook";
+import EditBook from "./EditBook";
+import { useDeleteBook } from "./useDeleteBook";
+import moment from "moment";
+import { useExportCSV } from "../TableExport.tsx/useExportCSV";
+import { useReactToPrint } from "react-to-print";
+import { useExportPDF } from "../TableExport.tsx/useExportPDF";
+import ExportCSVButton from "../TableExport.tsx/ExportCSVButton";
+import ExportPDFButton from "../TableExport.tsx/ExportPDFButton";
 
 const BookList: React.FC = () => {
   const [tableData, setTableData] = useState<Book[]>([]);
@@ -54,6 +65,8 @@ const BookList: React.FC = () => {
     setSearchValue,
   } = useBooks();
   const { doReserveBook } = useReserveBook();
+  const { csvData } = useExportCSV(books);
+  const { exportToPDF } = useExportPDF(books);
 
   const {
     openAddBookModal,
@@ -64,6 +77,20 @@ const BookList: React.FC = () => {
     onAddBookFinish,
     onAddBookFinishFailed,
   } = useAddBook();
+
+  const {
+    openEditBookModal,
+    editBookForm,
+    handleEditBook,
+    handleEditBookOk,
+    handleEditBookCancel,
+    onEditBookFinish,
+    onEditBookFinishFailed,
+    editedBook,
+    setEditedBook,
+  } = useEditBook();
+
+  const { handleDeleteBookOk, setDeletedBook } = useDeleteBook();
 
   useEffect(() => {
     bookRefetch();
@@ -149,9 +176,9 @@ const BookList: React.FC = () => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space size="middle">
+        <>
           <Button
-            style={{ borderColor: "green" }}
+            style={{ borderColor: "green", margin: "3px" }}
             onClick={() => {
               doReserveBook(
                 record.id,
@@ -162,7 +189,37 @@ const BookList: React.FC = () => {
           >
             Reserve
           </Button>
-        </Space>
+          {sessionStorage.getItem("role") == "ADMIN" ? (
+            <>
+              <Button
+                style={{ borderColor: "blue", margin: "3px" }}
+                onClick={() => {
+                  setEditedBook(record);
+                  handleEditBook();
+                }}
+              >
+                Edit
+              </Button>
+              <Popconfirm
+                title="Delete Book"
+                description="Are you sure to delete this book?"
+                onConfirm={handleDeleteBookOk}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button
+                  style={{ margin: "3px" }}
+                  danger
+                  onClick={() => {
+                    setDeletedBook(record);
+                  }}
+                >
+                  Delete
+                </Button>
+              </Popconfirm>
+            </>
+          ) : null}
+        </>
       ),
     },
   ];
@@ -239,6 +296,8 @@ const BookList: React.FC = () => {
           Add a new book
         </Button>
       ) : null}
+      <ExportCSVButton csvData={csvData}></ExportCSVButton>
+      <ExportPDFButton exportToPDF={exportToPDF}></ExportPDFButton>
       <Table<Book>
         columns={enhancedColumns}
         dataSource={tableData}
@@ -257,6 +316,21 @@ const BookList: React.FC = () => {
           form={addBookForm}
           onFinish={onAddBookFinish}
           onFinishFailed={onAddBookFinishFailed}
+        />
+      </Modal>
+      <Modal
+        key="editUserModal"
+        title={<h1 className="table-label">Edit User</h1>}
+        open={openEditBookModal}
+        onOk={handleEditBookOk}
+        onCancel={handleEditBookCancel}
+      >
+        <EditBook
+          genres={genres}
+          form={editBookForm}
+          onFinish={onEditBookFinish}
+          onFinishFailed={onEditBookFinishFailed}
+          editedBook={editedBook}
         />
       </Modal>
     </>

@@ -28,7 +28,7 @@ export interface UsersState {
   >;
   setSearchColumn: React.Dispatch<React.SetStateAction<string>>;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
-  doUpdateUser: (
+  doEditUser: (
     data: LibraryUser,
     onSuccess: () => void,
     onError: (error: string) => void
@@ -144,25 +144,25 @@ export const useUsers: () => UsersState = () => {
     userRefetch();
   }, [currentPage, sorterResult, searchValue, searchColumn, selectedRoles]);
 
-  //Update user
-  const postUpdateUser = (values: LibraryUser) => {
+  //Edit user
+  const postEditUser = (values: LibraryUser) => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
-    return axios.post(`http://${ip}:8080/api/user/updateUser`, values, {
+    return axios.post(`http://${ip}:8080/api/user/editUser`, values, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
   };
 
-  const updateUserMutation = useMutation("updateUserQuery", postUpdateUser);
+  const editUserMutation = useMutation("editUserQuery", postEditUser);
 
-  const doUpdateUser = (
+  const doEditUser = (
     values: LibraryUser,
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
-    updateUserMutation.mutate(values, {
+    editUserMutation.mutate(values, {
       onSuccess,
       onError: (error) => {
         onError(
@@ -213,7 +213,7 @@ export const useUsers: () => UsersState = () => {
     setSorterResult,
     setSearchColumn,
     setSearchValue,
-    doUpdateUser,
+    doEditUser,
     doAddUser,
     doDeleteUser,
     setSelectedRoles,

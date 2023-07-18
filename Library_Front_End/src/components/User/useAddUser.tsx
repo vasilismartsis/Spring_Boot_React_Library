@@ -31,7 +31,7 @@ export const useAddUser: () => useAddUserState = () => {
     setSorterResult,
     setSearchColumn,
     setSearchValue,
-    doUpdateUser,
+    doEditUser,
     doAddUser,
     setSelectedRoles,
   } = useUsers();

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Reservation, ReservationColumn } from "./types";
 import {
   Button,
   Input,
@@ -12,25 +11,17 @@ import {
   TableProps,
   message,
 } from "antd";
-import { useReservations } from "./useReservations";
 import pagination from "antd/es/pagination";
 import { ColumnsType } from "antd/es/table";
 import { SorterResult } from "antd/es/table/interface";
-import { Book } from "../Book/types";
 import { SearchOutlined } from "@ant-design/icons";
-import { LibraryUser } from "../User/types";
-import EditUser from "../User/EditUser";
-import { useEditReservation } from "./useEditReservation";
-import { useDeleteReservation } from "./useDeleteReservation";
-import EditReservation from "./EditReservation";
-import ExportCSVButton from "../TableExport.tsx/ExportCSVButton";
-import { useExportCSV } from "../TableExport.tsx/useExportCSV";
-import { useExportPDF } from "../TableExport.tsx/useExportPDF";
-import ExportPDFButton from "../TableExport.tsx/ExportPDFButton";
+import { Reservation, ReservationColumn } from "../../Reservation/types";
+import { useReservations } from "../../Reservation/useReservations";
+import { useDeleteReservation } from "../../Reservation/useDeleteReservation";
 
-export interface ReservationListProps {}
+export interface MyReservationListProps {}
 
-const ReservationList: React.FC<ReservationListProps> = (props) => {
+const MyReservationList: React.FC<MyReservationListProps> = (props) => {
   const [tableData, setTableData] = useState<Reservation[]>([]);
 
   const {
@@ -47,22 +38,8 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
     doDeleteReservation,
   } = useReservations();
 
-  const {
-    openEditReservationModal,
-    editReservationForm,
-    handleEditReservation,
-    handleEditReservationOk,
-    handleEditReservationCancel,
-    onEditReservationFinish,
-    onEditReservationFinishFailed,
-    setOpenEditReservationModal,
-    editedReservation,
-    setEditedReservation,
-  } = useEditReservation();
   const { handleDeleteReservationOk, setDeletedReservation } =
     useDeleteReservation();
-  const { csvData } = useExportCSV(reservations);
-  const { exportToPDF } = useExportPDF(reservations);
 
   useEffect(() => {
     reservationRefetch();
@@ -93,13 +70,6 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
       sortable: true,
     },
     {
-      key: "libraryUser",
-      title: "User",
-      dataIndex: "username",
-      searchable: true,
-      sortable: true,
-    },
-    {
       key: "book",
       title: "Book Title",
       dataIndex: "bookTitle",
@@ -121,49 +91,11 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
       sortable: true,
     },
     {
-      key: "createdBy",
-      title: "Created By",
-      dataIndex: "createdBy",
-      searchable: true,
-      sortable: true,
-    },
-    {
-      key: "lastModifiedBy",
-      title: "Last Modified By",
-      dataIndex: "lastModifiedBy",
-      searchable: true,
-      sortable: true,
-    },
-    {
-      key: "creationDate",
-      title: "Creation Date",
-      dataIndex: "creationDate",
-      searchable: true,
-      sortable: true,
-    },
-    {
-      key: "lastModifiedDate",
-      title: "Last Modified Date",
-      dataIndex: "lastModifiedDate",
-      searchable: true,
-      sortable: true,
-    },
-    {
       title: "Action",
       key: "action",
       render: (_: any, record: Reservation) => {
         return (
           <>
-            <Button
-              style={{ borderColor: "blue", margin: "3px" }}
-              onClick={() => {
-                setEditedReservation(record);
-                handleEditReservation();
-              }}
-            >
-              Edit
-            </Button>
-
             <Popconfirm
               title="Delete User"
               description="Are you sure to delete this user?"
@@ -178,7 +110,7 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
                   setDeletedReservation(record);
                 }}
               >
-                Delete
+                Return Book
               </Button>
             </Popconfirm>
           </>
@@ -251,8 +183,6 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
 
   return (
     <>
-      <ExportCSVButton csvData={csvData}></ExportCSVButton>
-      <ExportPDFButton exportToPDF={exportToPDF}></ExportPDFButton>
       <Table<Reservation>
         columns={enhancedColumns}
         dataSource={tableData}
@@ -260,22 +190,8 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
         bordered={true}
         onChange={onChange}
       />
-      <Modal
-        key="editUserModal"
-        title={<h1 className="table-label">Edit Reservation</h1>}
-        open={openEditReservationModal}
-        onOk={handleEditReservationOk}
-        onCancel={handleEditReservationCancel}
-      >
-        <EditReservation
-          form={editReservationForm}
-          onFinish={onEditReservationFinish}
-          onFinishFailed={onEditReservationFinishFailed}
-          editedReservation={editedReservation}
-        />
-      </Modal>
     </>
   );
 };
 
-export default ReservationList;
+export default MyReservationList;

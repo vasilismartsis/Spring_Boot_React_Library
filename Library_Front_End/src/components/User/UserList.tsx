@@ -45,7 +45,7 @@ const UserList: React.FC = () => {
     setSorterResult,
     setSearchColumn,
     setSearchValue,
-    doUpdateUser,
+    doEditUser,
     doAddUser,
     doDeleteUser,
     setSelectedRoles,
@@ -136,7 +136,7 @@ const UserList: React.FC = () => {
         return (
           <>
             <Button
-              style={{ borderColor: "blue" }}
+              style={{ borderColor: "blue", margin: "3px" }}
               onClick={() => {
                 setEditedUser(record);
                 handleEditUser();
@@ -144,7 +144,7 @@ const UserList: React.FC = () => {
             >
               Edit
             </Button>
-            &nbsp;
+
             <Popconfirm
               title="Delete User"
               description="Are you sure to delete this user?"
@@ -153,6 +153,7 @@ const UserList: React.FC = () => {
               cancelText="No"
             >
               <Button
+                style={{ margin: "3px" }}
                 danger
                 onClick={() => {
                   setDeletedUser(record);

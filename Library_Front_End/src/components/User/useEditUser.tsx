@@ -35,7 +35,7 @@ export const useEditUser: () => useEditUserState = () => {
     setSorterResult,
     setSearchColumn,
     setSearchValue,
-    doUpdateUser,
+    doEditUser,
     doAddUser,
     setSelectedRoles,
   } = useUsers();
@@ -66,10 +66,9 @@ export const useEditUser: () => useEditUserState = () => {
     const mappedValues = {
       ...values,
       id: editedUser.id,
-      lastModifiedBy: sessionStorage.getItem("username") ?? "",
     };
 
-    doUpdateUser(mappedValues, onEditUserSuccess, onEditUserError);
+    doEditUser(mappedValues, onEditUserSuccess, onEditUserError);
   };
 
   const onEditUserFinishFailed = (errorInfo: any) => {

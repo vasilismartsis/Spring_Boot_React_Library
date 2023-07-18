@@ -77,18 +77,19 @@ const Profile: React.FC = () => {
       <Layout>
         <Header
           style={{
+            backgroundColor: "rgb(237, 237, 237)",
             padding: 0,
             background: colorBgContainer,
             textAlign: "center",
-            minHeight: "15%",
-            maxHeight: "15%",
+            minHeight: "23%",
+            maxHeight: "23%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
           }}
         >
           <h1 style={{ color: "green" }}>
-            User: {sessionStorage.getItem("user")}
+            User: {sessionStorage.getItem("username")}
           </h1>
           <h2>Role: {sessionStorage.getItem("role")}</h2>
         </Header>
