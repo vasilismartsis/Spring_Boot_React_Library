@@ -36,7 +36,7 @@ public class BookService {
         bookSpecifications = new BookSpecifications();
     }
 
-    public BookResponse getBooks(ArrayList<String> genres, @PageableDefault(size = 5) int page, String order, String sortedColumn, String searchColumn, String searchValue) {
+    public BookResponse getBooks(ArrayList<String> genres, int pageSize, int page, String order, String sortedColumn, String searchColumn, String searchValue) {
         long totalBookNumber = bookRepository.count();
         Direction sortDirection = order.equals("descend") ? Direction.DESC : Direction.ASC;
         String noNullSortedColumn = sortedColumn.equals("undefined") ? "id" : sortedColumn;
@@ -44,7 +44,7 @@ public class BookService {
         ArrayList<Genre> genresEnum = genres.stream()
                 .map(genreString -> Genre.valueOf(genreString.toUpperCase()))
                 .collect(Collectors.toCollection(ArrayList::new));
-        Pageable pageable = !order.equals("undefined") ? PageRequest.of(page - 1, 5, sort) : PageRequest.of(page - 1, 5);
+        Pageable pageable = !order.equals("undefined") ? PageRequest.of(page - 1, pageSize, sort) : PageRequest.of(page - 1, pageSize);
         Page<Book> bookPage;
         if (genresEnum.isEmpty()) {
             if (!searchColumn.equals("")) {

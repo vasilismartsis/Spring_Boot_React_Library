@@ -6,8 +6,11 @@ import React, {
   useState,
 } from "react";
 import { Book, BookColumn, BookResource } from "./types";
+import "./BookList.css";
+import type { CollapseProps } from "antd";
 import {
   Button,
+  Collapse,
   Dropdown,
   Input,
   MenuProps,
@@ -16,12 +19,14 @@ import {
   PaginationProps,
   Popconfirm,
   Radio,
+  Select,
   Space,
   Table,
   Tag,
   message,
 } from "antd";
 import { DownOutlined, UserOutlined, SearchOutlined } from "@ant-design/icons";
+import { Line } from "@ant-design/charts";
 import axios from "axios";
 import { useGenres } from "./useGenres";
 import { useBooks } from "./useBooks";
@@ -47,15 +52,19 @@ import { useReactToPrint } from "react-to-print";
 import { useExportPDF } from "../TableExport.tsx/useExportPDF";
 import ExportCSVButton from "../TableExport.tsx/ExportCSVButton";
 import ExportPDFButton from "../TableExport.tsx/ExportPDFButton";
+import PieChart from "./PieChart";
 
 const BookList: React.FC = () => {
+  const [pageSize, setPageSize] = useState<number>(5);
   const [tableData, setTableData] = useState<Book[]>([]);
+  const [isPiePanelOpen, setPiePanelOpen] = useState(false);
+  const [showAvailable, setShowAvailable] = useState<boolean>(false);
 
   const { genres, error: genresError } = useGenres();
   const {
     totalBookNumber,
     books,
-    error: bookError,
+    bookError,
     setCurrentPage,
     currentPage,
     setGenres,
@@ -63,7 +72,10 @@ const BookList: React.FC = () => {
     setSorterResult,
     setSearchColumn,
     setSearchValue,
-  } = useBooks();
+    doAddBook,
+    doEditBook,
+    doDeleteBook,
+  } = useBooks(pageSize);
   const { doReserveBook } = useReserveBook();
   const { csvData } = useExportCSV(books);
   const { exportToPDF } = useExportPDF(books);
@@ -271,7 +283,7 @@ const BookList: React.FC = () => {
     onChange(page) {
       setCurrentPage(() => page);
     },
-    pageSize: 5,
+    pageSize,
     current: currentPage,
     total: totalBookNumber,
     defaultCurrent: 1,
@@ -287,17 +299,79 @@ const BookList: React.FC = () => {
 
   return (
     <>
-      {sessionStorage.getItem("role") == "ADMIN" ? (
-        <Button
-          onClick={handleAddBook}
-          type="primary"
-          style={{ marginBottom: 16 }}
+      <Collapse ghost activeKey={isPiePanelOpen ? "1" : ""}>
+        <Collapse.Panel
+          key="1"
+          header=""
+          collapsible="disabled"
+          showArrow={false}
+          style={{ pointerEvents: !isPiePanelOpen ? "none" : "auto" }}
         >
-          Add a new book
-        </Button>
-      ) : null}
-      <ExportCSVButton csvData={csvData}></ExportCSVButton>
-      <ExportPDFButton exportToPDF={exportToPDF}></ExportPDFButton>
+          <PieChart showAvailable={showAvailable} />
+          <div className="pie-chart-toggle-container">
+            <Button
+              shape="round"
+              className="pie-chart-toggle"
+              onClick={() => {
+                setShowAvailable(!showAvailable);
+              }}
+            >
+              {showAvailable ? "Show Available" : "Show Total"}
+            </Button>
+          </div>
+        </Collapse.Panel>
+      </Collapse>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        {sessionStorage.getItem("role") == "ADMIN" ? (
+          <Button
+            onClick={handleAddBook}
+            type="primary"
+            style={{ marginBottom: 16 }}
+          >
+            Add a new book
+          </Button>
+        ) : null}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Select
+            value={"Export Table"}
+            style={{ width: 160, margin: "1%" }}
+            status="error"
+            options={[
+              {
+                value: "csv",
+                label: <ExportCSVButton csvData={csvData}></ExportCSVButton>,
+              },
+              {
+                value: "pdf",
+                label: (
+                  <ExportPDFButton exportToPDF={exportToPDF}></ExportPDFButton>
+                ),
+              },
+            ]}
+          />
+          <Button
+            style={{
+              margin: "1%",
+              backgroundColor: "rgb(237, 169, 59)",
+            }}
+            onClick={() => {
+              setPiePanelOpen(!isPiePanelOpen);
+            }}
+          >
+            Pie Chart
+          </Button>
+        </div>
+      </div>
       <Table<Book>
         columns={enhancedColumns}
         dataSource={tableData}

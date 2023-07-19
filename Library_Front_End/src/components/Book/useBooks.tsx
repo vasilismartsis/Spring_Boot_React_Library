@@ -15,7 +15,7 @@ import { SorterResult } from "antd/es/table/interface";
 export interface BooksState {
   totalBookNumber: number;
   books: Book[];
-  error?: any;
+  bookError?: any;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
   setGenres: React.Dispatch<React.SetStateAction<string[]>>;
@@ -40,10 +40,11 @@ export interface BooksState {
   ) => void;
 }
 
-export const useBooks: () => BooksState = () => {
+export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
   const [totalBookNumber, setTotalBookNumber] = useState<number>(0);
   const [books, setBooks] = useState<Book[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+
   const [genres, setGenres] = useState<string[]>([]);
   const [sorterResult, setSorterResult] = useState<SorterResult<Book>>({});
   const [searchColumn, setSearchColumn] = useState<string>("");
@@ -54,7 +55,7 @@ export const useBooks: () => BooksState = () => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
     return axios.get(
-      `http://${ip}:8080/api/book/getBooks?genres=${genres}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+      `http://${ip}:8080/api/book/getBooks?genres=${genres}&pageSize=${pageSize}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
       {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -63,13 +64,17 @@ export const useBooks: () => BooksState = () => {
     );
   };
 
-  const { error, refetch: bookRefetch } = useQuery("getBooks", getBooks, {
-    enabled: false,
-    onSuccess: (res) => {
-      setTotalBookNumber(() => (res.data as BookResource).totalBookNumber);
-      setBooks(() => (res.data as BookResource).singleBookResponse);
-    },
-  });
+  const { error: bookError, refetch: bookRefetch } = useQuery(
+    "getBooks",
+    getBooks,
+    {
+      enabled: false,
+      onSuccess: (res) => {
+        setTotalBookNumber(() => (res.data as BookResource).totalBookNumber);
+        setBooks(() => (res.data as BookResource).singleBookResponse);
+      },
+    }
+  );
 
   useEffect(() => {
     bookRefetch();
@@ -162,7 +167,7 @@ export const useBooks: () => BooksState = () => {
   return {
     totalBookNumber,
     books,
-    error,
+    bookError,
     setCurrentPage,
     currentPage,
     setGenres,

@@ -15,7 +15,7 @@ export const useDeleteBook: () => useDeleteBookState = () => {
   const {
     totalBookNumber,
     books,
-    error,
+    bookError,
     setCurrentPage,
     currentPage,
     setGenres,
@@ -26,7 +26,7 @@ export const useDeleteBook: () => useDeleteBookState = () => {
     doAddBook,
     doEditBook,
     doDeleteBook,
-  } = useBooks();
+  } = useBooks(5);
 
   const handleDeleteBookOk = () => {
     doDeleteBook(deletedBook, onDeleteBookSuccess, onDeleteBookError);

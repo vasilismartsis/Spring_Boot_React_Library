@@ -21,7 +21,7 @@ export const useAddBook: () => useAddBookState = () => {
   const {
     totalBookNumber,
     books,
-    error: bookError,
+    bookError: bookError,
     setCurrentPage,
     currentPage,
     setGenres,
@@ -30,7 +30,7 @@ export const useAddBook: () => useAddBookState = () => {
     setSearchColumn,
     setSearchValue,
     doAddBook,
-  } = useBooks();
+  } = useBooks(5);
 
   const handleAddBook = () => {
     setOpenAddBookModal(true);
