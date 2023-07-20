@@ -19,7 +19,7 @@ export const useAddBook: () => useAddBookState = () => {
   const [addBookForm] = useForm<AddBookForm>();
 
   const {
-    totalBookNumber,
+    totalBooks: totalBookNumber,
     books,
     bookError: bookError,
     setCurrentPage,

@@ -13,7 +13,7 @@ export const useDeleteBook: () => useDeleteBookState = () => {
   const [deletedBook, setDeletedBook] = useState<Book>({} as Book);
 
   const {
-    totalBookNumber,
+    totalBooks: totalBookNumber,
     books,
     bookError,
     setCurrentPage,

@@ -4,18 +4,35 @@ export interface ExportCSVState {
   csvData: any[];
 }
 
-export const useExportCSV: (data: any[]) => ExportCSVState = (data) => {
+export const useExportCSV: (tableData: any[]) => ExportCSVState = (
+  tableData
+) => {
   const [csvData, setCSVData] = useState<any[]>([]);
 
+  const pieChartData = [
+    { genre: "Fantasy", value: 25 },
+    { genre: "Science Fiction", value: 18 },
+    { genre: "Mystery", value: 12 },
+    { genre: "Romance", value: 20 },
+  ];
+
   useEffect(() => {
-    setCSVData([
+    const tableCSVData = [
       ["Exported by:", sessionStorage.getItem("username")],
       ["Exported date:", new Date()],
       [],
-      data.length > 0 ? Object.keys(data[0]) : [],
-      ...data.map((data) => Object.values(data)),
-    ]);
-  }, [data]);
+      tableData.length > 0 ? Object.keys(tableData[0]) : [],
+      ...tableData.map((data) => Object.values(data)),
+    ];
+
+    const pieChartCSVData = [
+      ["Pie Chart Data:"],
+      ["Genre", "Value"],
+      ...pieChartData.map((data) => [data.genre, data.value]),
+    ];
+
+    setCSVData([...tableCSVData, [], ...pieChartCSVData]);
+  }, [tableData]);
 
   return { csvData };
 };

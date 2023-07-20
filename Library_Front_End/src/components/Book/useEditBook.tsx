@@ -22,7 +22,7 @@ export const useEditBook: () => useEditBookState = () => {
   const [editedBook, setEditedBook] = useState<Book>({} as Book);
 
   const {
-    totalBookNumber,
+    totalBooks: totalBookNumber,
     books,
     bookError: bookError,
     setCurrentPage,

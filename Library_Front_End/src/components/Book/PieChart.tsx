@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { Pie, PieConfig } from "@ant-design/plots";
 import { useBooks } from "./useBooks";
+import Papa from "papaparse";
+import ExcelJS from "exceljs";
 
 interface pieChartProps {
-  showAvailable: boolean;
+  showCopies: boolean;
 }
 
-const PieChart: React.FC<pieChartProps> = ({ showAvailable }) => {
+const PieChart: React.FC<pieChartProps> = ({ showCopies }) => {
   const {
-    totalBookNumber,
+    totalBooks,
+    totalZeroQuantityBooks,
+    totalBookCopies,
+    totalBookCopiesReserved,
     books,
     bookError,
     setCurrentPage,
@@ -24,14 +29,33 @@ const PieChart: React.FC<pieChartProps> = ({ showAvailable }) => {
     doDeleteBook,
   } = useBooks(100);
 
-  const bookData = books.map((book) => ({
-    type: book.title,
-    value: book.quantity,
-  }));
+  const totalAgainstAvailableBookData = [
+    {
+      type: "Books",
+      value: totalBooks,
+    },
+    {
+      type: "Available Books",
+      value: totalBooks - totalZeroQuantityBooks,
+    },
+  ];
+
+  const totalAgainstAvailableCopiesBookData = [
+    {
+      type: "Book Copies",
+      value: totalBookCopies,
+    },
+    {
+      type: "Available Book Copies",
+      value: totalBookCopies - totalBookCopiesReserved,
+    },
+  ];
 
   const config: PieConfig = {
     appendPadding: 10,
-    data: bookData,
+    data: !showCopies
+      ? totalAgainstAvailableBookData
+      : totalAgainstAvailableCopiesBookData,
     angleField: "value",
     colorField: "type",
     radius: 0.9,
@@ -39,9 +63,7 @@ const PieChart: React.FC<pieChartProps> = ({ showAvailable }) => {
       type: "inner",
       offset: "-30%",
       content: (data) => {
-        return showAvailable
-          ? `${(data.percent * 100).toFixed(0)}%`
-          : `${(data.percent * 100).toFixed(0)}%`;
+        return `${data.value}`;
       },
       style: {
         fontSize: 14,
@@ -55,6 +77,7 @@ const PieChart: React.FC<pieChartProps> = ({ showAvailable }) => {
       { type: "element-active" },
     ],
   };
+
   return <Pie {...config} />;
 };
 

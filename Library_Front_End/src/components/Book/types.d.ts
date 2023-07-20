@@ -1,7 +1,10 @@
 import { ColumnType } from "antd/es/table";
 
 export type BookResource = {
-    totalBookNumber: number;
+    totalBooks: number;
+    totalZeroQuantityBooks: number;
+    totalBookCopies: number;
+    totalBookCopiesReserved: number;
     singleBookResponse: Book[];
 }
 

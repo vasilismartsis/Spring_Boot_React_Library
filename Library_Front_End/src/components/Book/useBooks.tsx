@@ -13,7 +13,10 @@ import {
 import { SorterResult } from "antd/es/table/interface";
 
 export interface BooksState {
-  totalBookNumber: number;
+  totalBooks: number;
+  totalZeroQuantityBooks: number;
+  totalBookCopies: number;
+  totalBookCopiesReserved: number;
   books: Book[];
   bookError?: any;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
@@ -41,7 +44,12 @@ export interface BooksState {
 }
 
 export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
-  const [totalBookNumber, setTotalBookNumber] = useState<number>(0);
+  const [totalBooks, setTotalBooks] = useState<number>(0);
+  const [totalZeroQuantityBooks, setTotalZeroQuantityBooks] =
+    useState<number>(0);
+  const [totalBookCopies, setTotalBookCopies] = useState<number>(0);
+  const [totalBookCopiesReserved, setTotalBookCopiesReserved] =
+    useState<number>(0);
   const [books, setBooks] = useState<Book[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -70,7 +78,14 @@ export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
     {
       enabled: false,
       onSuccess: (res) => {
-        setTotalBookNumber(() => (res.data as BookResource).totalBookNumber);
+        setTotalBooks(() => (res.data as BookResource).totalBooks);
+        setTotalZeroQuantityBooks(
+          () => (res.data as BookResource).totalZeroQuantityBooks
+        );
+        setTotalBookCopies(() => (res.data as BookResource).totalBookCopies);
+        setTotalBookCopiesReserved(
+          () => (res.data as BookResource).totalBookCopiesReserved
+        );
         setBooks(() => (res.data as BookResource).singleBookResponse);
       },
     }
@@ -165,7 +180,10 @@ export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
   };
 
   return {
-    totalBookNumber,
+    totalBooks,
+    totalZeroQuantityBooks,
+    totalBookCopies,
+    totalBookCopiesReserved,
     books,
     bookError,
     setCurrentPage,

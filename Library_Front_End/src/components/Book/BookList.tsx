@@ -53,16 +53,17 @@ import { useExportPDF } from "../TableExport.tsx/useExportPDF";
 import ExportCSVButton from "../TableExport.tsx/ExportCSVButton";
 import ExportPDFButton from "../TableExport.tsx/ExportPDFButton";
 import PieChart from "./PieChart";
+import ExportCSVPieChart from "./ExportCSVPieChart";
 
 const BookList: React.FC = () => {
   const [pageSize, setPageSize] = useState<number>(5);
   const [tableData, setTableData] = useState<Book[]>([]);
   const [isPiePanelOpen, setPiePanelOpen] = useState(false);
-  const [showAvailable, setShowAvailable] = useState<boolean>(false);
+  const [showCopies, setShowCopies] = useState<boolean>(false);
 
   const { genres, error: genresError } = useGenres();
   const {
-    totalBookNumber,
+    totalBooks: totalBookNumber,
     books,
     bookError,
     setCurrentPage,
@@ -307,16 +308,16 @@ const BookList: React.FC = () => {
           showArrow={false}
           style={{ pointerEvents: !isPiePanelOpen ? "none" : "auto" }}
         >
-          <PieChart showAvailable={showAvailable} />
+          <PieChart showCopies={showCopies} />
           <div className="pie-chart-toggle-container">
             <Button
               shape="round"
               className="pie-chart-toggle"
               onClick={() => {
-                setShowAvailable(!showAvailable);
+                setShowCopies(!showCopies);
               }}
             >
-              {showAvailable ? "Show Available" : "Show Total"}
+              {showCopies ? "Show Available" : "Show Total"}
             </Button>
           </div>
         </Collapse.Panel>
@@ -327,6 +328,8 @@ const BookList: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
+        <ExportCSVPieChart />
+
         {sessionStorage.getItem("role") == "ADMIN" ? (
           <Button
             onClick={handleAddBook}
