@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,4 +23,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findAll(Specification<Book> bookSpecification, Pageable pageable);
 
     Optional<Book> findByTitle(String title);
+
+    long countByQuantity(int quantity);
+
+    @Query("SELECT SUM(b.quantity) FROM Book b")
+    int sumQuantity();
 }

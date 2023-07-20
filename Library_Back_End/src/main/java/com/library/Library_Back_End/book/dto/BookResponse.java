@@ -1,16 +1,16 @@
 package com.library.Library_Back_End.book.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class BookResponse {
-    private long totalBookNumber;
+    private long totalBooks;
+    private long totalZeroQuantityBooks;
+    private long totalBookCopies;
+    private long totalBookCopiesReserved;
     private List<SingleBookResponse> singleBookResponse;
-
-    public BookResponse(long totalBookNumber, List<SingleBookResponse> singleBookResponse) {
-        this.totalBookNumber = totalBookNumber;
-        this.singleBookResponse = singleBookResponse;
-    }
 }

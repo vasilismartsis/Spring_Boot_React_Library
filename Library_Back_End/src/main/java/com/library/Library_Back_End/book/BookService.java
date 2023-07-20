@@ -3,6 +3,7 @@ package com.library.Library_Back_End.book;
 import com.library.Library_Back_End.auditing.AuditingConfig;
 import com.library.Library_Back_End.book.dto.*;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
+import com.library.Library_Back_End.reservation.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,13 +24,15 @@ import java.util.stream.Collectors;
 public class BookService {
     private final LibraryUserRepository libraryUserRepository;
     private final BookRepository bookRepository;
+    private final ReservationRepository reservationRepository;
     private final BookConfiguration bookConfiguration;
     private final BookSpecifications bookSpecifications;
     private final AuditingConfig auditingConfig;
 
     @Autowired
-    public BookService(BookRepository bookRepository, BookConfiguration bookConfiguration, LibraryUserRepository libraryUserRepository, AuditingConfig auditingConfig) {
+    public BookService(BookRepository bookRepository, ReservationRepository reservationRepository, BookConfiguration bookConfiguration, LibraryUserRepository libraryUserRepository, AuditingConfig auditingConfig) {
         this.bookRepository = bookRepository;
+        this.reservationRepository = reservationRepository;
         this.bookConfiguration = bookConfiguration;
         this.libraryUserRepository = libraryUserRepository;
         this.auditingConfig = auditingConfig;
@@ -37,7 +40,12 @@ public class BookService {
     }
 
     public BookResponse getBooks(ArrayList<String> genres, int pageSize, int page, String order, String sortedColumn, String searchColumn, String searchValue) {
-        long totalBookNumber = bookRepository.count();
+        long totalBooks = bookRepository.count();
+        long totalZeroQuantityBooks = bookRepository.countByQuantity(0);
+        int totalBookCopiesNotReserved = bookRepository.sumQuantity();
+        long totalBookCopiesReserved = reservationRepository.count();
+        long totalBookCopies = totalBookCopiesNotReserved + totalBookCopiesReserved;
+
         Direction sortDirection = order.equals("descend") ? Direction.DESC : Direction.ASC;
         String noNullSortedColumn = sortedColumn.equals("undefined") ? "id" : sortedColumn;
         Sort sort = Sort.by(sortDirection, noNullSortedColumn);
@@ -72,7 +80,7 @@ public class BookService {
                 ))
                 .toList();
 
-        return new BookResponse(totalBookNumber, singleBookResource);
+        return new BookResponse(totalBooks, totalZeroQuantityBooks, totalBookCopies, totalBookCopiesReserved, singleBookResource);
     }
 
 //    public void saveDummyBooks() {
