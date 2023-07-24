@@ -91,6 +91,21 @@ public class BookService {
         return bookConfiguration.genres();
     }
 
+    public double divide(int dividend, int divider) {
+        return dividend/divider;
+    }
+
+    public void doSomething() {
+        bookRepository.deleteAll();
+    }
+
+    public void deleteById(Long bookId, boolean safe) {
+        if (safe && bookRepository.findById(bookId).isEmpty()) {
+            return;
+        }
+        bookRepository.deleteById(bookId);
+    }
+
     public ResponseEntity<String> addBook(AddBookRequest addBookRequest) {
         try {
             Book book = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre(), auditingConfig.getAuditor(), auditingConfig.getAuditor());
