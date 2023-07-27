@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -47,27 +48,24 @@ import { useEditBook } from "./useEditBook";
 import EditBook from "./EditBook";
 import { useDeleteBook } from "./useDeleteBook";
 import moment from "moment";
-import { useExportCSV } from "../TableExport.tsx/useExportCSV";
+import { useExportCSV } from "../TableExport/useExportCSV";
 import { useReactToPrint } from "react-to-print";
-import { useExportPDF } from "../TableExport.tsx/useExportPDF";
-import ExportCSVButton from "../TableExport.tsx/ExportCSVButton";
-import ExportPDFButton from "../TableExport.tsx/ExportPDFButton";
+import ExportCSVButton from "../TableExport/ExportCSVButton";
 import PieChart from "./PieChart";
-import ExportCSVPieChart from "./ExportCSVPieChart";
+import { BookContext } from "./BookContext";
 
 const BookList: React.FC = () => {
-  const [pageSize, setPageSize] = useState<number>(5);
-  const [tableData, setTableData] = useState<Book[]>([]);
-  const [isPiePanelOpen, setPiePanelOpen] = useState(false);
-  const [showCopies, setShowCopies] = useState<boolean>(false);
-
-  const { genres, error: genresError } = useGenres();
   const {
-    totalBooks: totalBookNumber,
+    totalBooks,
+    totalZeroQuantityBooks,
+    totalBookCopies,
+    totalBookCopiesReserved,
     books,
     bookError,
     setCurrentPage,
     currentPage,
+    pageSize,
+    setPageSize,
     setGenres,
     bookRefetch,
     setSorterResult,
@@ -76,10 +74,22 @@ const BookList: React.FC = () => {
     doAddBook,
     doEditBook,
     doDeleteBook,
-  } = useBooks(pageSize);
+    xlsxError,
+    xlsxRefetch,
+    pdfRefetch,
+    pdfError,
+    pptxRefetch,
+    pptxError,
+  } = useContext(BookContext);
+
+  const [tableData, setTableData] = useState<Book[]>([]);
+  const [isPiePanelOpen, setPiePanelOpen] = useState(false);
+  const [showCopies, setShowCopies] = useState<boolean>(false);
+
+  const { genres, error: genresError } = useGenres();
+
   const { doReserveBook } = useReserveBook();
   const { csvData } = useExportCSV(books);
-  const { exportToPDF } = useExportPDF(books);
 
   const {
     openAddBookModal,
@@ -286,7 +296,7 @@ const BookList: React.FC = () => {
     },
     pageSize,
     current: currentPage,
-    total: totalBookNumber,
+    total: totalBooks,
     defaultCurrent: 1,
   };
 
@@ -328,8 +338,6 @@ const BookList: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
-        <ExportCSVPieChart />
-
         {sessionStorage.getItem("role") == "ADMIN" ? (
           <Button
             onClick={handleAddBook}
@@ -347,18 +355,48 @@ const BookList: React.FC = () => {
         >
           <Select
             value={"Export Table"}
-            style={{ width: 160, margin: "1%" }}
+            style={{
+              width: 165,
+              margin: "1%",
+            }}
             status="error"
             options={[
               {
-                value: "csv",
-                label: <ExportCSVButton csvData={csvData}></ExportCSVButton>,
-              },
-              {
                 value: "pdf",
                 label: (
-                  <ExportPDFButton exportToPDF={exportToPDF}></ExportPDFButton>
+                  <Button
+                    onClick={pdfRefetch}
+                    style={{ backgroundColor: "red", color: "white" }}
+                  >
+                    Export to PDF
+                  </Button>
                 ),
+              },
+              {
+                value: "pttx",
+                label: (
+                  <Button
+                    onClick={pptxRefetch}
+                    style={{ backgroundColor: "orange" }}
+                  >
+                    Export to PTTX
+                  </Button>
+                ),
+              },
+              {
+                value: "xlsx",
+                label: (
+                  <Button
+                    onClick={xlsxRefetch}
+                    style={{ backgroundColor: "lightgreen" }}
+                  >
+                    Export to XLSX
+                  </Button>
+                ),
+              },
+              {
+                value: "csv",
+                label: <ExportCSVButton csvData={csvData}></ExportCSVButton>,
               },
             ]}
           />

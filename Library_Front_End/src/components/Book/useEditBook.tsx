@@ -1,8 +1,9 @@
 import { message } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Book, EditBookForm } from "./types";
 import { useBooks } from "./useBooks";
+import { BookContext } from "./BookContext";
 
 export interface useEditBookState {
   openEditBookModal: boolean;
@@ -17,23 +18,11 @@ export interface useEditBookState {
 }
 
 export const useEditBook: () => useEditBookState = () => {
+  const { bookRefetch, doEditBook } = useContext(BookContext);
+
   const [openEditBookModal, setOpenEditBookModal] = useState(false);
   const [editBookForm] = useForm<EditBookForm>();
   const [editedBook, setEditedBook] = useState<Book>({} as Book);
-
-  const {
-    totalBooks: totalBookNumber,
-    books,
-    bookError: bookError,
-    setCurrentPage,
-    currentPage,
-    setGenres,
-    bookRefetch,
-    setSorterResult,
-    setSearchColumn,
-    setSearchValue,
-    doEditBook,
-  } = useBooks(5);
 
   useEffect(() => {
     if (Object.keys(editedBook).length > 0) {

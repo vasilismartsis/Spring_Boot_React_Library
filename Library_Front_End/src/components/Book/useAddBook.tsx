@@ -1,8 +1,9 @@
 import { message } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { AddBookForm } from "./types";
 import { useBooks } from "./useBooks";
+import { BookContext } from "./BookContext";
 
 export interface useAddBookState {
   openAddBookModal: boolean;
@@ -15,22 +16,10 @@ export interface useAddBookState {
 }
 
 export const useAddBook: () => useAddBookState = () => {
+  const { bookRefetch, doAddBook } = useContext(BookContext);
+
   const [openAddBookModal, setOpenAddBookModal] = useState(false);
   const [addBookForm] = useForm<AddBookForm>();
-
-  const {
-    totalBooks: totalBookNumber,
-    books,
-    bookError: bookError,
-    setCurrentPage,
-    currentPage,
-    setGenres,
-    bookRefetch,
-    setSorterResult,
-    setSearchColumn,
-    setSearchValue,
-    doAddBook,
-  } = useBooks(5);
 
   const handleAddBook = () => {
     setOpenAddBookModal(true);

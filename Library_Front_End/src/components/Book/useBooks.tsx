@@ -21,6 +21,8 @@ export interface BooksState {
   bookError?: any;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
+  pageSize: number;
+  setPageSize: React.Dispatch<React.SetStateAction<number>>;
   setGenres: React.Dispatch<React.SetStateAction<string[]>>;
   bookRefetch: () => void;
   setSorterResult: React.Dispatch<React.SetStateAction<SorterResult<Book>>>;
@@ -41,18 +43,17 @@ export interface BooksState {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => void;
+  xlsxError?: any;
+  xlsxRefetch: () => void;
+  pdfError?: any;
+  pdfRefetch: () => void;
+  pptxError?: any;
+  pptxRefetch: () => void;
 }
 
-export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
-  const [totalBooks, setTotalBooks] = useState<number>(0);
-  const [totalZeroQuantityBooks, setTotalZeroQuantityBooks] =
-    useState<number>(0);
-  const [totalBookCopies, setTotalBookCopies] = useState<number>(0);
-  const [totalBookCopiesReserved, setTotalBookCopiesReserved] =
-    useState<number>(0);
-  const [books, setBooks] = useState<Book[]>([]);
+export const useBooks: () => BooksState = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
-
+  const [pageSize, setPageSize] = useState<number>(5);
   const [genres, setGenres] = useState<string[]>([]);
   const [sorterResult, setSorterResult] = useState<SorterResult<Book>>({});
   const [searchColumn, setSearchColumn] = useState<string>("");
@@ -62,34 +63,25 @@ export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
   const getBooks = () => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
-    return axios.get(
-      `http://${ip}:8080/api/book/getBooks?genres=${genres}&pageSize=${pageSize}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      }
-    );
+    return axios
+      .get<any, AxiosResponse<BookResource>>(
+        `http://${ip}:8080/api/book/getBooks?genres=${genres}&pageSize=${pageSize}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((r) => r.data);
   };
 
-  const { error: bookError, refetch: bookRefetch } = useQuery(
-    "getBooks",
-    getBooks,
-    {
-      enabled: false,
-      onSuccess: (res) => {
-        setTotalBooks(() => (res.data as BookResource).totalBooks);
-        setTotalZeroQuantityBooks(
-          () => (res.data as BookResource).totalZeroQuantityBooks
-        );
-        setTotalBookCopies(() => (res.data as BookResource).totalBookCopies);
-        setTotalBookCopiesReserved(
-          () => (res.data as BookResource).totalBookCopiesReserved
-        );
-        setBooks(() => (res.data as BookResource).singleBookResponse);
-      },
-    }
-  );
+  const {
+    error: bookError,
+    refetch: bookRefetch,
+    data: bookData,
+  } = useQuery("getBooks", getBooks, {
+    enabled: false,
+  });
 
   useEffect(() => {
     bookRefetch();
@@ -179,15 +171,99 @@ export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
     });
   };
 
+  //Get XLSX
+  const getXLSX = () => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.get(`http://${ip}:8080/api/book/getXLSX`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+      responseType: "blob", // Set the response type to 'blob' to handle binary data
+    });
+  };
+
+  const { error: xlsxError, refetch: xlsxRefetch } = useQuery(
+    "getXLSX",
+    getXLSX,
+    {
+      enabled: false,
+      onSuccess: (res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Books.xlsx");
+        document.body.appendChild(link);
+        link.click();
+      },
+    }
+  );
+
+  //Get PDF
+  const getPDF = () => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.get(`http://${ip}:8080/api/book/getPDF`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+      responseType: "blob", // Set the response type to 'blob' to handle binary data
+    });
+  };
+
+  const { error: pdfError, refetch: pdfRefetch } = useQuery("getPDF", getPDF, {
+    enabled: false,
+    onSuccess: (res) => {
+      const pdfBlob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Books.pdf");
+      document.body.appendChild(link);
+      link.click();
+    },
+  });
+
+  //Get PPTX
+  const getPPTX = () => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios.get(`http://${ip}:8080/api/book/getPPTX`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+      responseType: "blob", // Set the response type to 'blob' to handle binary data
+    });
+  };
+
+  const { error: pptxError, refetch: pptxRefetch } = useQuery(
+    "getPPTX",
+    getPPTX,
+    {
+      enabled: false,
+      onSuccess: (res) => {
+        const pptxBlob = new Blob([res.data], { type: "application/pptx" });
+        const url = window.URL.createObjectURL(pptxBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "Books.pptx");
+        document.body.appendChild(link);
+        link.click();
+      },
+    }
+  );
+
   return {
-    totalBooks,
-    totalZeroQuantityBooks,
-    totalBookCopies,
-    totalBookCopiesReserved,
-    books,
+    totalBooks: bookData?.totalBooks || 0,
+    totalZeroQuantityBooks: bookData?.totalZeroQuantityBooks || 0,
+    totalBookCopies: bookData?.totalBookCopies || 0,
+    totalBookCopiesReserved: bookData?.totalBookCopiesReserved || 0,
+    books: bookData?.singleBookResponse || [],
     bookError,
     setCurrentPage,
     currentPage,
+    pageSize,
+    setPageSize,
     setGenres,
     bookRefetch,
     setSorterResult,
@@ -196,5 +272,11 @@ export const useBooks: (pageSize: number) => BooksState = (pageSize) => {
     doAddBook,
     doEditBook,
     doDeleteBook,
+    xlsxError,
+    xlsxRefetch,
+    pdfRefetch,
+    pdfError,
+    pptxRefetch,
+    pptxError,
   };
 };

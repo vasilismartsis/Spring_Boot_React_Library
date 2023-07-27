@@ -23,10 +23,10 @@ import EditUser from "../User/EditUser";
 import { useEditReservation } from "./useEditReservation";
 import { useDeleteReservation } from "./useDeleteReservation";
 import EditReservation from "./EditReservation";
-import ExportCSVButton from "../TableExport.tsx/ExportCSVButton";
-import { useExportCSV } from "../TableExport.tsx/useExportCSV";
-import { useExportPDF } from "../TableExport.tsx/useExportPDF";
-import ExportPDFButton from "../TableExport.tsx/ExportPDFButton";
+import ExportCSVButton from "../TableExport/ExportCSVButton";
+import { useExportCSV } from "../TableExport/useExportCSV";
+import { useExportPDF } from "../TableExport/useExportPDF";
+import ExportPDFButton from "../TableExport/ExportPDFButton";
 
 export interface ReservationListProps {}
 

@@ -1,8 +1,9 @@
 import { message } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useBooks } from "./useBooks";
 import { Book } from "./types";
+import { BookContext } from "./BookContext";
 
 export interface useDeleteBookState {
   handleDeleteBookOk: () => void;
@@ -10,23 +11,9 @@ export interface useDeleteBookState {
 }
 
 export const useDeleteBook: () => useDeleteBookState = () => {
-  const [deletedBook, setDeletedBook] = useState<Book>({} as Book);
+  const { bookRefetch, doDeleteBook } = useContext(BookContext);
 
-  const {
-    totalBooks: totalBookNumber,
-    books,
-    bookError,
-    setCurrentPage,
-    currentPage,
-    setGenres,
-    bookRefetch,
-    setSorterResult,
-    setSearchColumn,
-    setSearchValue,
-    doAddBook,
-    doEditBook,
-    doDeleteBook,
-  } = useBooks(5);
+  const [deletedBook, setDeletedBook] = useState<Book>({} as Book);
 
   const handleDeleteBookOk = () => {
     doDeleteBook(deletedBook, onDeleteBookSuccess, onDeleteBookError);

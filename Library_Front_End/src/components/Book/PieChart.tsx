@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { Pie, PieConfig } from "@ant-design/plots";
 import { useBooks } from "./useBooks";
 import Papa from "papaparse";
 import ExcelJS from "exceljs";
+import { BookContext } from "./BookContext";
 
 interface pieChartProps {
   showCopies: boolean;
@@ -15,19 +16,7 @@ const PieChart: React.FC<pieChartProps> = ({ showCopies }) => {
     totalZeroQuantityBooks,
     totalBookCopies,
     totalBookCopiesReserved,
-    books,
-    bookError,
-    setCurrentPage,
-    currentPage,
-    setGenres,
-    bookRefetch,
-    setSorterResult,
-    setSearchColumn,
-    setSearchValue,
-    doAddBook,
-    doEditBook,
-    doDeleteBook,
-  } = useBooks(100);
+  } = useContext(BookContext);
 
   const totalAgainstAvailableBookData = [
     {
