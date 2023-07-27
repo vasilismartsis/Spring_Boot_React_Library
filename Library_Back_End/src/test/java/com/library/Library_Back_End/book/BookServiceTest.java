@@ -1,6 +1,9 @@
 package com.library.Library_Back_End.book;
 
 import com.library.Library_Back_End.auditing.AuditingConfig;
+import com.library.Library_Back_End.book.BookExport.PDFBookExport;
+import com.library.Library_Back_End.book.BookExport.PPTXBookExport;
+import com.library.Library_Back_End.book.BookExport.XLSXBookExport;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
 import com.library.Library_Back_End.reservation.ReservationRepository;
 import org.junit.jupiter.api.Assertions;
@@ -23,6 +26,10 @@ class BookServiceTest {
     private ReservationRepository reservationRepository;
     private BookConfiguration bookConfiguration;
     private AuditingConfig auditingConfig;
+    private BookSpecifications bookSpecifications;
+    private XLSXBookExport xlsxBookExport;
+    private PDFBookExport pdfBookExport;
+    private PPTXBookExport pptxBookExport;
 
     @BeforeEach
     void setUp() {
@@ -31,12 +38,20 @@ class BookServiceTest {
         reservationRepository = Mockito.mock(ReservationRepository.class);
         bookConfiguration = Mockito.mock(BookConfiguration.class);
         auditingConfig = Mockito.mock(AuditingConfig.class);
+        bookSpecifications = Mockito.mock(BookSpecifications.class);
+        xlsxBookExport = Mockito.mock(XLSXBookExport.class);
+        pdfBookExport = Mockito.mock(PDFBookExport.class);
+        pptxBookExport = Mockito.mock(PPTXBookExport.class);
         bookService = new BookService(
                 bookRepository,
                 reservationRepository,
                 bookConfiguration,
                 libraryUserRepository,
-                auditingConfig
+                auditingConfig,
+                bookSpecifications,
+                xlsxBookExport,
+                pdfBookExport,
+                pptxBookExport
         );
     }
 
@@ -73,8 +88,8 @@ class BookServiceTest {
     public void testDeleteAll() {
         //Arrange
         doNothing()
-        .doThrow(new IllegalStateException())
-        .when(bookRepository).deleteAll();
+                .doThrow(new IllegalStateException())
+                .when(bookRepository).deleteAll();
 
         //Act
         bookService.doSomething();

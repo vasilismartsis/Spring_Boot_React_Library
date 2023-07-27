@@ -1,9 +1,12 @@
 package com.library.Library_Back_End.book;
 
+import com.itextpdf.text.DocumentException;
 import com.library.Library_Back_End.auditing.AuditingConfig;
+import com.library.Library_Back_End.book.BookExport.*;
 import com.library.Library_Back_End.book.dto.*;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
 import com.library.Library_Back_End.reservation.ReservationRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,11 +14,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,15 +33,30 @@ public class BookService {
     private final BookConfiguration bookConfiguration;
     private final BookSpecifications bookSpecifications;
     private final AuditingConfig auditingConfig;
+    private final XLSXBookExport xlsxBookExport;
+    private final PDFBookExport pdfBookExport;
+    private final PPTXBookExport pptxBookExport;
 
     @Autowired
-    public BookService(BookRepository bookRepository, ReservationRepository reservationRepository, BookConfiguration bookConfiguration, LibraryUserRepository libraryUserRepository, AuditingConfig auditingConfig) {
+    public BookService(BookRepository bookRepository,
+                       ReservationRepository reservationRepository,
+                       BookConfiguration bookConfiguration,
+                       LibraryUserRepository libraryUserRepository,
+                       AuditingConfig auditingConfig,
+                       BookSpecifications bookSpecifications,
+                       XLSXBookExport xlsxBookExport,
+                       PDFBookExport pdfBookExport,
+                       PPTXBookExport pptxBookExport
+    ) {
         this.bookRepository = bookRepository;
         this.reservationRepository = reservationRepository;
         this.bookConfiguration = bookConfiguration;
         this.libraryUserRepository = libraryUserRepository;
         this.auditingConfig = auditingConfig;
-        bookSpecifications = new BookSpecifications();
+        this.bookSpecifications = bookSpecifications;
+        this.xlsxBookExport = xlsxBookExport;
+        this.pdfBookExport = pdfBookExport;
+        this.pptxBookExport = pptxBookExport;
     }
 
     public BookResponse getBooks(ArrayList<String> genres, int pageSize, int page, String order, String sortedColumn, String searchColumn, String searchValue) {
@@ -92,7 +112,7 @@ public class BookService {
     }
 
     public double divide(int dividend, int divider) {
-        return dividend/divider;
+        return dividend / divider;
     }
 
     public void doSomething() {
@@ -140,4 +160,47 @@ public class BookService {
         }
     }
 
+    public ResponseEntity<byte[]> getXLSX() {
+        try {
+            byte[] excelBytes = xlsxBookExport.generateFile();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "Books.xlsx");
+
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            // Handle exception if needed
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<byte[]> getPDF() {
+        byte[] excelBytes = pdfBookExport.generateFile();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "Books.pdf");
+
+        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+    }
+
+    public ResponseEntity<byte[]> getPPTX() {
+        try {
+            byte[] pptBytes = pptxBookExport.generateFile();
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "Books.pptx");
+            return new ResponseEntity<>(pptBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            // Handle the exception and return an appropriate response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -26,7 +26,8 @@ public class Book {
     @SequenceGenerator(
             name = "book_sequence",
             sequenceName = "book_sequence",
-            allocationSize = 1
+            allocationSize = 1,
+            initialValue = 9
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,

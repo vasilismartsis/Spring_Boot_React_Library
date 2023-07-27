@@ -3,9 +3,11 @@ package com.library.Library_Back_End.book;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
+@Component
 public class BookSpecifications {
     public Specification<Book> findAllByGenreAndColumnContaining(ArrayList<Genre> genres, String column, String value) {
         return (root, query, criteriaBuilder) -> {

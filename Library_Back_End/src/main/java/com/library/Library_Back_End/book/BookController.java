@@ -5,6 +5,8 @@ import com.library.Library_Back_End.book.dto.BookResponse;
 import com.library.Library_Back_End.book.dto.DeleteBookRequest;
 import com.library.Library_Back_End.book.dto.EditBookRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,5 +54,20 @@ public class BookController {
     @PostMapping("/deleteBook")
     public ResponseEntity<String> deleteBook(@RequestBody DeleteBookRequest deleteBookRequest) {
         return bookService.deleteBook(deleteBookRequest);
+    }
+
+    @GetMapping(value = "/getXLSX", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> getXLSX() {
+        return bookService.getXLSX();
+    }
+
+    @GetMapping(value = "/getPDF", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> getPDF() {
+        return bookService.getPDF();
+    }
+
+    @GetMapping(value = "/getPPTX", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> getPPTX() {
+        return bookService.getPPTX();
     }
 }
