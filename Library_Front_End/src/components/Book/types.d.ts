@@ -22,7 +22,7 @@ export type Book = {
 export interface BookColumn extends ColumnType<Book> {
     searchable?: boolean;
     sortable?: boolean;
-  }
+}
 
 export type ReserveRequest = {
     username: string;
@@ -33,7 +33,7 @@ export type AddBookForm = {
     title: string;
     quantity: number;
     genre: string;
-  }
+}
   
 export type EditBookForm = {
   title: string;

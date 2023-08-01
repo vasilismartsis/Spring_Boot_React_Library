@@ -23,7 +23,7 @@ export const useEditUser: () => useEditUserState = () => {
   const [editedUser, setEditedUser] = useState<LibraryUser>({} as LibraryUser);
 
   const {
-    totalUserNumber,
+    totalUsers: totalUserNumber,
     users,
     userError,
     roles,

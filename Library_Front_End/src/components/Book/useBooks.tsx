@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, MenuProps, Pagination, Space, message } from "antd";
 import { DownOutlined, BookOutlined } from "@ant-design/icons";
@@ -81,6 +81,11 @@ export const useBooks: () => BooksState = () => {
     data: bookData,
   } = useQuery("getBooks", getBooks, {
     enabled: false,
+    onError(err: AxiosError) {
+      if (err.code == AxiosError.ERR_BAD_REQUEST) {
+        window.location.href = "/login";
+      }
+    },
   });
 
   useEffect(() => {
@@ -161,6 +166,7 @@ export const useBooks: () => BooksState = () => {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
+    console.log(values);
     deleteBookMutation.mutate(values, {
       onSuccess,
       onError: (error) => {

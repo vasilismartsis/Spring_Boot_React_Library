@@ -1,9 +1,10 @@
 import { FormInstance, message } from "antd";
 import { EditReservationForm, Reservation } from "./types";
 import { useReservations } from "./useReservations";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useForm } from "antd/es/form/Form";
 import dayjs from "dayjs";
+import { ReservationContext } from "./ReservationContext";
 
 export interface useEditReservationState {
   openEditReservationModal: boolean;
@@ -27,18 +28,18 @@ export const useEditReservation: () => useEditReservationState = () => {
   );
 
   const {
-    totalReservationNumber,
+    totalReservations: totalReservationNumber,
     reservations,
     setCurrentPage,
     currentPage,
-    error,
+    reservationError,
     reservationRefetch,
     setSorterResult,
     setSearchColumn,
     setSearchValue,
     doEditReservation,
     doDeleteReservation,
-  } = useReservations();
+  } = useContext(ReservationContext);
 
   useEffect(() => {
     if (Object.keys(editedReservation).length > 0) {

@@ -33,7 +33,7 @@ const UserList: React.FC = () => {
   const [tableData, setTableData] = useState<LibraryUser[]>([]);
 
   const {
-    totalUserNumber,
+    totalUsers: totalUserNumber,
     users,
     userError,
     roles,

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, MenuProps, Pagination, Space, message } from "antd";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
@@ -14,7 +14,7 @@ import { LibraryUser, UserResource } from "./types";
 import { SorterResult } from "antd/es/table/interface";
 
 export interface UsersState {
-  totalUserNumber: number;
+  totalUsers: number;
   users: LibraryUser[];
   userError?: any;
   roles: string[];
@@ -47,42 +47,70 @@ export interface UsersState {
 }
 
 export const useUsers: () => UsersState = () => {
-  const [totalUserNumber, setTotalUserNumber] = useState<number>(0);
-  const [users, setUsers] = useState<LibraryUser[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sorterResult, setSorterResult] = useState<SorterResult<LibraryUser>>(
     {}
   );
   const [searchColumn, setSearchColumn] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
-  const [roles, setRoles] = useState<string[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
   //Get roles
   const getRoles = () => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
-    return axios.get(`http://${ip}:8080/api/user/getRoles`, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-    });
+    return axios
+      .get<any, AxiosResponse<string[]>>(
+        `http://${ip}:8080/api/user/getRoles`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((r) => r.data);
   };
 
-  const { error: roleError, refetch: roleRefetch } = useQuery(
-    "getRoles",
-    getRoles,
-    {
-      enabled: false,
-      onSuccess: (res) => {
-        setRoles(res.data);
-      },
-    }
-  );
+  const {
+    error: roleError,
+    data: roleData,
+    refetch: roleRefetch,
+  } = useQuery("getRoles", getRoles, {
+    enabled: true,
+  });
+
+  //Get users
+  const getUsers = () => {
+    const currentURL = window.location.href;
+    const ip = new URL(currentURL).hostname;
+    return axios
+      .get<any, AxiosResponse<UserResource>>(
+        `http://${ip}:8080/api/user/getUsers?selectedRoles=${selectedRoles}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((r) => r.data);
+  };
+
+  const {
+    error: userError,
+    data: userData,
+    refetch: userRefetch,
+  } = useQuery("getUsers", getUsers, {
+    enabled: false,
+    onError(err: AxiosError) {
+      if (err.code == AxiosError.ERR_BAD_REQUEST) {
+        window.location.href = "/login";
+      }
+    },
+  });
 
   useEffect(() => {
-    roleRefetch();
-  }, []);
+    userRefetch();
+  }, [currentPage, sorterResult, searchValue, searchColumn, selectedRoles]);
 
   //Add user
   const postAddUser = (values: LibraryUser) => {
@@ -111,38 +139,6 @@ export const useUsers: () => UsersState = () => {
       },
     });
   };
-
-  //Get user
-  const getUsers = () => {
-    const currentURL = window.location.href;
-    const ip = new URL(currentURL).hostname;
-    return axios.get(
-      `http://${ip}:8080/api/user/getUsers?selectedRoles=${selectedRoles}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.field}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      }
-    );
-  };
-
-  const { error: userError, refetch: userRefetch } = useQuery(
-    "getUsers",
-    getUsers,
-    {
-      enabled: false,
-      onSuccess: (res) => {
-        setTotalUserNumber(
-          () => (res.data as UserResource).totalLibraryUserNumber
-        );
-        setUsers(() => (res.data as UserResource).singleLibraryUserResponse);
-      },
-    }
-  );
-
-  useEffect(() => {
-    userRefetch();
-  }, [currentPage, sorterResult, searchValue, searchColumn, selectedRoles]);
 
   //Edit user
   const postEditUser = (values: LibraryUser) => {
@@ -201,10 +197,10 @@ export const useUsers: () => UsersState = () => {
   };
 
   return {
-    totalUserNumber,
-    users,
+    totalUsers: userData?.totalLibraryUsers || 0,
+    users: userData?.singleLibraryUserResponse || [],
     userError,
-    roles,
+    roles: roleData || [],
     roleError,
     roleRefetch,
     setCurrentPage,

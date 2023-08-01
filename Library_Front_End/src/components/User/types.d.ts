@@ -1,7 +1,7 @@
 import { ColumnType } from "antd/es/table";
 
 export type UserResource = {
-  totalLibraryUserNumber: number;
+  totalLibraryUsers: number;
   singleLibraryUserResponse: LibraryUser[];
 };
 

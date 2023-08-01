@@ -15,7 +15,7 @@ export const useDeleteUser: () => useDeleteUserState = () => {
   );
 
   const {
-    totalUserNumber,
+    totalUsers: totalUserNumber,
     users,
     userError,
     roles,

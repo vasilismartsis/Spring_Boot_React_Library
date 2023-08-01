@@ -116,10 +116,6 @@ const BookList: React.FC = () => {
   const { handleDeleteBookOk, setDeletedBook } = useDeleteBook();
 
   useEffect(() => {
-    bookRefetch();
-  }, []);
-
-  useEffect(() => {
     if (!!genresError) {
       message.info(
         <span style={{ fontSize: "30px" }}>

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, MenuProps, Pagination, Space, message } from "antd";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
@@ -8,11 +8,11 @@ import { SorterResult } from "antd/es/table/interface";
 import { Book } from "../Book/types";
 
 export interface ReservationsState {
-  totalReservationNumber: number;
+  totalReservations: number;
   reservations: Reservation[];
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
-  error?: any;
+  reservationError?: any;
   reservationRefetch: () => void;
   setSorterResult: React.Dispatch<
     React.SetStateAction<SorterResult<Reservation>>
@@ -32,9 +32,6 @@ export interface ReservationsState {
 }
 
 export const useReservations: () => ReservationsState = () => {
-  const [totalReservationNumber, setTotalReservationNumber] =
-    useState<number>(0);
-  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sorterResult, setSorterResult] = useState<SorterResult<Reservation>>(
     {}
@@ -46,35 +43,34 @@ export const useReservations: () => ReservationsState = () => {
   const getReservations = () => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
-    return axios.get(
-      `http://${ip}:8080/api/reservation/getReservations?user=${sessionStorage.getItem(
-        "username"
-      )}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${
-        sorterResult.columnKey
-      }&searchColumn=${searchColumn}&searchValue=${searchValue}`,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      }
-    );
+    return axios
+      .get<any, AxiosResponse<ReservationResource>>(
+        `http://${ip}:8080/api/reservation/getReservations?user=${sessionStorage.getItem(
+          "username"
+        )}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${
+          sorterResult.columnKey
+        }&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((r) => r.data);
   };
 
-  const { error, refetch: reservationRefetch } = useQuery(
-    "getReservations",
-    getReservations,
-    {
-      enabled: false,
-      onSuccess: (res) => {
-        setTotalReservationNumber(
-          () => (res.data as ReservationResource).totalReservationNumber
-        );
-        setReservations(
-          () => (res.data as ReservationResource).singleReservationResponse
-        );
-      },
-    }
-  );
+  const {
+    error: reservationError,
+    refetch: reservationRefetch,
+    data: reservationData,
+  } = useQuery("getReservations", getReservations, {
+    enabled: false,
+    onError(err: AxiosError) {
+      if (err.code == AxiosError.ERR_BAD_REQUEST) {
+        window.location.href = "/login";
+      }
+    },
+  });
 
   useEffect(() => {
     reservationRefetch();
@@ -140,6 +136,8 @@ export const useReservations: () => ReservationsState = () => {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
+    console.log(values);
+
     deleteReservationMutation.mutate(values, {
       onSuccess,
       onError: (error) => {
@@ -151,11 +149,11 @@ export const useReservations: () => ReservationsState = () => {
   };
 
   return {
-    totalReservationNumber,
-    reservations,
+    totalReservations: reservationData?.totalReservations || 0,
+    reservations: reservationData?.singleReservationResponse || [],
     setCurrentPage,
     currentPage,
-    error,
+    reservationError,
     reservationRefetch,
     setSorterResult,
     setSearchColumn,

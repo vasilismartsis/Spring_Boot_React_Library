@@ -1,8 +1,9 @@
 import { message } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useReservations } from "./useReservations";
 import { Reservation } from "./types";
+import { ReservationContext } from "./ReservationContext";
 
 export interface useDeleteReservationState {
   handleDeleteReservationOk: () => void;
@@ -15,24 +16,24 @@ export const useDeleteReservation: () => useDeleteReservationState = () => {
   );
 
   const {
-    totalReservationNumber,
+    totalReservations: totalReservationNumber,
     reservations,
     setCurrentPage,
     currentPage,
-    error,
+    reservationError,
     reservationRefetch,
     setSorterResult,
     setSearchColumn,
     setSearchValue,
     doEditReservation,
     doDeleteReservation,
-  } = useReservations();
+  } = useContext(ReservationContext);
 
   const handleDeleteReservationOk = () => {
     const mappedValues = {
-      ...deletedReservation,
+      id: deletedReservation.id,
       bookTitle: deletedReservation.bookTitle,
-    };
+    } as Reservation;
 
     doDeleteReservation(
       mappedValues,

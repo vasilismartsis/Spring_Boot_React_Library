@@ -15,11 +15,11 @@ export const useDeleteReservation: () => useDeleteReservationState = () => {
   );
 
   const {
-    totalReservationNumber,
+    totalReservations: totalReservationNumber,
     reservations,
     setCurrentPage,
     currentPage,
-    error,
+    reservationError,
     reservationRefetch,
     setSorterResult,
     setSearchColumn,

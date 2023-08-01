@@ -1,7 +1,7 @@
 import { ColumnType } from "antd/es/table";
 
 export type ReservationResource = {
-    totalReservationNumber: number;
+    totalReservations: number;
     singleReservationResponse: Reservation[];
 }
 

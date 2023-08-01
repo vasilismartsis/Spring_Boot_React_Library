@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Reservation, ReservationColumn } from "./types";
 import {
   Button,
@@ -6,6 +6,7 @@ import {
   Modal,
   Pagination,
   Popconfirm,
+  Select,
   Space,
   Table,
   TablePaginationConfig,
@@ -27,25 +28,24 @@ import ExportCSVButton from "../TableExport/ExportCSVButton";
 import { useExportCSV } from "../TableExport/useExportCSV";
 import { useExportPDF } from "../TableExport/useExportPDF";
 import ExportPDFButton from "../TableExport/ExportPDFButton";
+import { ReservationContext } from "./ReservationContext";
 
-export interface ReservationListProps {}
-
-const ReservationList: React.FC<ReservationListProps> = (props) => {
+const ReservationList: React.FC = () => {
   const [tableData, setTableData] = useState<Reservation[]>([]);
 
   const {
-    totalReservationNumber,
+    totalReservations,
     reservations,
     setCurrentPage,
     currentPage,
-    error,
+    reservationError,
     reservationRefetch,
     setSorterResult,
     setSearchColumn,
     setSearchValue,
     doEditReservation,
     doDeleteReservation,
-  } = useReservations();
+  } = useContext(ReservationContext);
 
   const {
     openEditReservationModal,
@@ -65,19 +65,15 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
   const { exportToPDF } = useExportPDF(reservations);
 
   useEffect(() => {
-    reservationRefetch();
-  }, []);
-
-  useEffect(() => {
-    if (!!error) {
+    if (!!reservationError) {
       message.info(
         <span style={{ fontSize: "30px" }}>
           "There was an error on the server. Please reload the page! Error:{" "}
-          {error}"
+          {reservationError}"
         </span>
       );
     }
-  }, [error]);
+  }, [reservationError]);
 
   const onSearch = (searchColumnName: string, searchValue: string) => {
     setSearchColumn(searchColumnName);
@@ -240,7 +236,7 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
     },
     pageSize: 5,
     current: currentPage,
-    total: totalReservationNumber,
+    total: totalReservations,
     defaultCurrent: 1,
   };
 
@@ -251,8 +247,33 @@ const ReservationList: React.FC<ReservationListProps> = (props) => {
 
   return (
     <>
-      <ExportCSVButton csvData={csvData}></ExportCSVButton>
-      <ExportPDFButton exportToPDF={exportToPDF}></ExportPDFButton>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "right",
+        }}
+      >
+        <Select
+          value={"Export Table"}
+          style={{
+            width: 155,
+            margin: "1%",
+          }}
+          status="error"
+          options={[
+            {
+              value: "csv",
+              label: <ExportCSVButton csvData={csvData}></ExportCSVButton>,
+            },
+            {
+              value: "pdf",
+              label: (
+                <ExportPDFButton exportToPDF={exportToPDF}></ExportPDFButton>
+              ),
+            },
+          ]}
+        />
+      </div>
       <Table<Reservation>
         columns={enhancedColumns}
         dataSource={tableData}

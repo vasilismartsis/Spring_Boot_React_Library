@@ -25,11 +25,11 @@ const MyReservationList: React.FC<MyReservationListProps> = (props) => {
   const [tableData, setTableData] = useState<Reservation[]>([]);
 
   const {
-    totalReservationNumber,
+    totalReservations: totalReservationNumber,
     reservations,
     setCurrentPage,
     currentPage,
-    error,
+    reservationError,
     reservationRefetch,
     setSorterResult,
     setSearchColumn,
@@ -46,15 +46,15 @@ const MyReservationList: React.FC<MyReservationListProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!!error) {
+    if (!!reservationError) {
       message.info(
         <span style={{ fontSize: "30px" }}>
           "There was an error on the server. Please reload the page! Error:{" "}
-          {error}"
+          {reservationError}"
         </span>
       );
     }
-  }, [error]);
+  }, [reservationError]);
 
   const onSearch = (searchColumnName: string, searchValue: string) => {
     setSearchColumn(searchColumnName);

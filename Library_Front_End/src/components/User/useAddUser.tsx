@@ -19,7 +19,7 @@ export const useAddUser: () => useAddUserState = () => {
   const [addUserForm] = useForm<AddUserForm>();
 
   const {
-    totalUserNumber,
+    totalUsers: totalUserNumber,
     users,
     userError,
     roles,

@@ -1,6 +1,6 @@
 import { message } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useBooks } from "./useBooks";
 import { Book } from "./types";
 import { BookContext } from "./BookContext";
@@ -16,7 +16,13 @@ export const useDeleteBook: () => useDeleteBookState = () => {
   const [deletedBook, setDeletedBook] = useState<Book>({} as Book);
 
   const handleDeleteBookOk = () => {
-    doDeleteBook(deletedBook, onDeleteBookSuccess, onDeleteBookError);
+    // console.log(deletedBook);
+
+    const mappedValues = {
+      id: deletedBook.id,
+    } as Book;
+
+    doDeleteBook(mappedValues, onDeleteBookSuccess, onDeleteBookError);
   };
 
   const onDeleteBookSuccess = () => {
