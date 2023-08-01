@@ -1,17 +1,16 @@
 package com.library.Library_Back_End.libraryUser.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @Data
 public class LibraryUserResponse {
-    private long totalLibraryUserNumber;
+    private long totalLibraryUsers;
     private List<SingleLibraryUserResponse> singleLibraryUserResponse;
 
-    public LibraryUserResponse(long totalLibraryUserNumber, List<SingleLibraryUserResponse> singleLibraryUserResponse) {
-        this.totalLibraryUserNumber = totalLibraryUserNumber;
+    public LibraryUserResponse(long totalLibraryUsers, List<SingleLibraryUserResponse> singleLibraryUserResponse) {
+        this.totalLibraryUsers = totalLibraryUsers;
         this.singleLibraryUserResponse = singleLibraryUserResponse;
     }
 }

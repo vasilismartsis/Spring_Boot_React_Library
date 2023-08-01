@@ -6,11 +6,11 @@ import java.util.List;
 
 @Data
 public class ReservationResponse {
-    private long totalReservationNumber;
+    private long totalReservations;
     private List<SingleReservationResponse> singleReservationResponse;
 
-    public ReservationResponse(long totalReservationNumber, List<SingleReservationResponse> singleReservationResponse) {
-        this.totalReservationNumber = totalReservationNumber;
+    public ReservationResponse(long totalReservations, List<SingleReservationResponse> singleReservationResponse) {
+        this.totalReservations = totalReservations;
         this.singleReservationResponse = singleReservationResponse;
     }
 }

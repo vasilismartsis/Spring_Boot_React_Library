@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.library.Library_Back_End.book.Book;
 import com.library.Library_Back_End.libraryUser.LibraryUser;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -19,9 +17,10 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table
-@NoArgsConstructor
-@Data
 @EqualsAndHashCode
+@NoArgsConstructor
+@Getter
+@Setter
 public class Reservation {
     @Id
     @SequenceGenerator(
@@ -57,9 +56,11 @@ public class Reservation {
     @Temporal(TIMESTAMP)
     protected Date lastModifiedDate;
 
-    public Reservation(LibraryUser libraryUser, Book book, LibraryUser createdBy, LibraryUser lastModifiedBy) {
+    public Reservation(LibraryUser libraryUser, Book book, LocalDate reservationDate, LocalDate expirationDate, LibraryUser createdBy, LibraryUser lastModifiedBy) {
         this.libraryUser = libraryUser;
         this.book = book;
+        this.reservationDate = reservationDate;
+        this.expirationDate = expirationDate;
         this.createdBy = createdBy;
         this.lastModifiedBy = lastModifiedBy;
     }

@@ -23,22 +23,16 @@ public class LoginService {
         this.jwtToken = jwtToken;
     }
 
-    public ResponseEntity<LoginAuthResponse> login(LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername()
-                            , loginRequest.getPassword()
-                    ));
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-            // Authentication successful
-            String token = jwtToken.generateToken(authentication);
-            String role = authentication.getAuthorities().toArray()[0].toString();
-
-            return new ResponseEntity<>(new LoginAuthResponse(token, role), HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            // Authentication failed
-            return new ResponseEntity<>(new LoginAuthResponse("Wrong Credentials!"), HttpStatus.UNAUTHORIZED);
-        }
+    public LoginHeader login(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername()
+                        , loginRequest.getPassword()
+                ));
+        //SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Authentication successful
+        String token = jwtToken.generateToken(authentication);
+        String role = authentication.getAuthorities().toArray()[0].toString();
+        return new LoginHeader(token, role);
     }
 }

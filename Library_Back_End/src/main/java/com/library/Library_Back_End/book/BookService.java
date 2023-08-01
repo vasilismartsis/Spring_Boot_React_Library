@@ -103,14 +103,42 @@ public class BookService {
         return new BookResponse(totalBooks, totalZeroQuantityBooks, totalBookCopies, totalBookCopiesReserved, singleBookResource);
     }
 
-//    public void saveDummyBooks() {
-//        bookRepository.saveAll(bookConfiguration.books());
-//    }
-
     public Genre[] getGenres() {
         return bookConfiguration.genres();
     }
 
+    public void addBook(AddBookRequest addBookRequest) {
+        Book book = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre(), auditingConfig.getAuditor(), auditingConfig.getAuditor());
+        bookRepository.save(book);
+    }
+
+    public void editBook(EditBookRequest editBookRequest) {
+        Book book = bookRepository.findById(editBookRequest.getId()).orElseThrow();
+        book.setTitle(editBookRequest.getTitle());
+        book.setQuantity(editBookRequest.getQuantity());
+        book.setGenre(editBookRequest.getGenre());
+        book.setCreatedBy(auditingConfig.getAuditor());
+        book.setLastModifiedBy(auditingConfig.getAuditor());
+        bookRepository.save(book);
+    }
+
+    public void deleteBook(DeleteBookRequest deleteBookRequest) {
+        bookRepository.deleteById(deleteBookRequest.getId());
+    }
+
+    public byte[] getXLSX() throws IOException {
+        return xlsxBookExport.generateFile();
+    }
+
+    public byte[] getPDF() {
+        return pdfBookExport.generateFile();
+    }
+
+    public byte[] getPPTX() throws DocumentException, IOException {
+        return pptxBookExport.generateFile();
+    }
+
+    //Example tests
     public double divide(int dividend, int divider) {
         return dividend / divider;
     }
@@ -124,83 +152,5 @@ public class BookService {
             return;
         }
         bookRepository.deleteById(bookId);
-    }
-
-    public ResponseEntity<String> addBook(AddBookRequest addBookRequest) {
-        try {
-            Book book = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre(), auditingConfig.getAuditor(), auditingConfig.getAuditor());
-            bookRepository.save(book);
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
-    }
-
-    public ResponseEntity<String> editBook(EditBookRequest editBookRequest) {
-        try {
-            Book book = bookRepository.findById(editBookRequest.getId()).orElseThrow();
-            book.setTitle(editBookRequest.getTitle());
-            book.setQuantity(editBookRequest.getQuantity());
-            book.setGenre(editBookRequest.getGenre());
-            book.setCreatedBy(auditingConfig.getAuditor());
-            book.setLastModifiedBy(auditingConfig.getAuditor());
-            bookRepository.save(book);
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
-    }
-
-    public ResponseEntity<String> deleteBook(DeleteBookRequest deleteBookRequest) {
-        try {
-            bookRepository.deleteById(deleteBookRequest.getId());
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
-    }
-
-    public ResponseEntity<byte[]> getXLSX() {
-        try {
-            byte[] excelBytes = xlsxBookExport.generateFile();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "Books.xlsx");
-
-            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            // Handle exception if needed
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public ResponseEntity<byte[]> getPDF() {
-        byte[] excelBytes = pdfBookExport.generateFile();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "Books.pdf");
-
-        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-    }
-
-    public ResponseEntity<byte[]> getPPTX() {
-        try {
-            byte[] pptBytes = pptxBookExport.generateFile();
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "Books.pptx");
-            return new ResponseEntity<>(pptBytes, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            // Handle the exception and return an appropriate response
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

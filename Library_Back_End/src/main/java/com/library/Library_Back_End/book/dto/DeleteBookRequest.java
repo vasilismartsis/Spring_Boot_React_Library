@@ -1,8 +1,11 @@
 package com.library.Library_Back_End.book.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 public class DeleteBookRequest {
     private long id;
 }

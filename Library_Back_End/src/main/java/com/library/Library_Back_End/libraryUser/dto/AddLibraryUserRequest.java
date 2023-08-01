@@ -1,11 +1,13 @@
 package com.library.Library_Back_End.libraryUser.dto;
 
 import com.library.Library_Back_End.libraryUser.RoleEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
+@AllArgsConstructor
 @Data
 public class AddLibraryUserRequest {
     private long id;

@@ -1,5 +1,8 @@
 package com.library.Library_Back_End.reservation;
 
+import com.library.Library_Back_End.Exception.InternalServerErrorException;
+import com.library.Library_Back_End.Exception.NotFoundException;
+import com.library.Library_Back_End.Exception.OutOfStockException;
 import com.library.Library_Back_End.auditing.AuditingConfig;
 import com.library.Library_Back_End.book.Book;
 import com.library.Library_Back_End.book.BookRepository;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,47 +86,32 @@ public class ReservationService {
     }
 
     @Transactional
-    public ResponseEntity<String> addReservation(AddReservationRequest addReservationRequest) {
-        try {
-            LibraryUser libraryUser = libraryUserRepository.findByUsername(addReservationRequest.getUsername()).orElseThrow();
-            Book book = bookRepository.findById(addReservationRequest.getBookId()).orElseThrow();
+    public void addReservation(AddReservationRequest addReservationRequest) throws NotFoundException, OutOfStockException, InternalServerErrorException {
+        LibraryUser libraryUser = libraryUserRepository.findByUsername(addReservationRequest.getUsername()).orElseThrow(NotFoundException::new);
+        Book book = bookRepository.findById(addReservationRequest.getBookId()).orElseThrow(NotFoundException::new);
 
-            if (book.getQuantity() > 0) {
-                Reservation reservation = new Reservation(libraryUser, book, auditingConfig.getAuditor(), auditingConfig.getAuditor());
-                decreaseBookQuantity(book);
-                reservationRepository.save(reservation);
-                return ResponseEntity.ok("OK");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book out of stock");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
-    }
-
-    @Transactional
-    public ResponseEntity<String> editReservation(EditReservationRequest editReservationRequest) {
-        try {
-            Reservation reservation = reservationRepository.findById(editReservationRequest.getId()).orElseThrow();
-            reservation.setReservationDate(ZonedDateTime.parse(editReservationRequest.getReservationDate()).toLocalDate());
-            reservation.setExpirationDate(ZonedDateTime.parse(editReservationRequest.getExpirationDate()).toLocalDate());
-            reservation.setLastModifiedBy(auditingConfig.getAuditor());
+        if (book.getQuantity() > 0) {
+            Reservation reservation = new Reservation(libraryUser, book, LocalDate.now(), LocalDate.now().plusDays(7), auditingConfig.getAuditor(), auditingConfig.getAuditor());
+            decreaseBookQuantity(book);
             reservationRepository.save(reservation);
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        } else {
+            throw new OutOfStockException();
         }
     }
 
     @Transactional
-    public ResponseEntity<String> deleteReservation(DeleteReservationRequest deleteReservationRequest) {
-        try {
-            reservationRepository.deleteById(deleteReservationRequest.getId());
-            increaseBookQuantity(bookRepository.findByTitle(deleteReservationRequest.getBookTitle()).orElseThrow());
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
+    public void editReservation(EditReservationRequest editReservationRequest) {
+        Reservation reservation = reservationRepository.findById(editReservationRequest.getId()).orElseThrow();
+        reservation.setReservationDate(ZonedDateTime.parse(editReservationRequest.getReservationDate(), DateTimeFormatter.ISO_DATE_TIME).toLocalDate().plusDays(1));
+        reservation.setExpirationDate(ZonedDateTime.parse(editReservationRequest.getExpirationDate(), DateTimeFormatter.ISO_DATE_TIME).toLocalDate().plusDays(1));
+        reservation.setLastModifiedBy(auditingConfig.getAuditor());
+        reservationRepository.save(reservation);
+    }
+
+    @Transactional
+    public void deleteReservation(DeleteReservationRequest deleteReservationRequest) {
+        reservationRepository.deleteById(deleteReservationRequest.getId());
+        increaseBookQuantity(bookRepository.findByTitle(deleteReservationRequest.getBookTitle()).orElseThrow());
     }
 
     private void decreaseBookQuantity(Book book) {

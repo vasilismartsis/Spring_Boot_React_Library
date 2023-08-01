@@ -57,7 +57,7 @@ public class LibraryUserService implements UserDetailsService {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRole().toString())).collect(Collectors.toList());
     }
 
-    public void saveDummyLibraryUsers() {
+    private void saveDummyLibraryUsers() {
         libraryUserRepository.saveAll(libraryUserConfiguration.libraryUsers());
         List<LibraryUser> libraryUsers = libraryUserRepository.findAll();
         List<LibraryUser> updatedLibraryUsers = libraryUsers.stream()
@@ -70,71 +70,45 @@ public class LibraryUserService implements UserDetailsService {
     }
 
     @Transactional
-    public ResponseEntity<LoginAuthResponse> changePassword(ChangePasswordRequest changePasswordRequest) {
-        if (loginService.login(new LoginRequest(changePasswordRequest.getUsername(), changePasswordRequest.getCurrentPassword())).getStatusCode() == HttpStatus.OK) {
-            try {
-                String encodedPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
-                LibraryUser libraryUser = libraryUserRepository.findByUsername(changePasswordRequest.getUsername()).orElseThrow();
-                libraryUser.setPassword(encodedPassword);
-                libraryUserRepository.save(libraryUser);
-                return loginService.login(new LoginRequest(changePasswordRequest.getUsername(), changePasswordRequest.getNewPassword()));
-            } catch (Exception e) {
-                return new ResponseEntity<>(new LoginAuthResponse("Something went wrong when the server tried to save your new password!"), HttpStatus.CONFLICT);
-            }
-        } else {
-            return new ResponseEntity<>(new LoginAuthResponse("Wrong Current Password!"), HttpStatus.UNAUTHORIZED);
-        }
+    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        String encodedPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+        LibraryUser libraryUser = libraryUserRepository.findByUsername(changePasswordRequest.getUsername()).orElseThrow();
+        libraryUser.setPassword(encodedPassword);
+        libraryUserRepository.save(libraryUser);
     }
 
     @Transactional
-    public ResponseEntity<String> addUser(AddLibraryUserRequest addLibraryUserRequest) {
-        try {
-            List<Role> roles = addLibraryUserRequest.getRoles().stream()
-                    .map(roleEnum -> new Role(roleEnum))
-                    .collect(Collectors.toList());
+    public void addUser(AddLibraryUserRequest addLibraryUserRequest) {
+        List<Role> roles = addLibraryUserRequest.getRoles().stream()
+                .map(roleEnum -> new Role(roleEnum))
+                .collect(Collectors.toList());
 
-            LibraryUser libraryUser = new LibraryUser(
-                    addLibraryUserRequest.getUsername(),
-                    passwordEncoder.encode(addLibraryUserRequest.getPassword()),
-                    roles,
-                    auditingConfig.getAuditor(),
-                    auditingConfig.getAuditor()
-            );
-            libraryUserRepository.save(libraryUser);
-
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
+        LibraryUser libraryUser = new LibraryUser(
+                addLibraryUserRequest.getUsername(),
+                passwordEncoder.encode(addLibraryUserRequest.getPassword()),
+                roles,
+                auditingConfig.getAuditor(),
+                auditingConfig.getAuditor()
+        );
+        libraryUserRepository.save(libraryUser);
     }
 
     @Transactional
-    public ResponseEntity<String> editUser(EditLibraryUserRequest editLibraryUserRequest) {
-        try {
-            List<Role> roles = editLibraryUserRequest.getRoles().stream()
-                    .map(roleEnum -> new Role(roleEnum))
-                    .collect(Collectors.toList());
-            LibraryUser libraryUser = libraryUserRepository.findById(editLibraryUserRequest.getId()).orElseThrow();
-            libraryUser.setUsername(editLibraryUserRequest.getUsername());
-            libraryUser.setPassword(passwordEncoder.encode(editLibraryUserRequest.getPassword()));
-            libraryUser.setRoles(roles);
-            libraryUser.setLastModifiedBy(auditingConfig.getAuditor());
-            libraryUserRepository.save(libraryUser);
-
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
+    public void editUser(EditLibraryUserRequest editLibraryUserRequest) {
+        List<Role> roles = editLibraryUserRequest.getRoles().stream()
+                .map(roleEnum -> new Role(roleEnum))
+                .collect(Collectors.toList());
+        LibraryUser libraryUser = libraryUserRepository.findById(editLibraryUserRequest.getId()).orElseThrow();
+        libraryUser.setUsername(editLibraryUserRequest.getUsername());
+        libraryUser.setPassword(passwordEncoder.encode(editLibraryUserRequest.getPassword()));
+        libraryUser.setRoles(roles);
+        libraryUser.setLastModifiedBy(auditingConfig.getAuditor());
+        libraryUserRepository.save(libraryUser);
     }
 
     @Transactional
-    public ResponseEntity<String> deleteUser(DeleteLibraryUserRequest deleteLibraryUserRequest) {
-        try {
-            libraryUserRepository.deleteById(deleteLibraryUserRequest.getId());
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
+    public void deleteUser(DeleteLibraryUserRequest deleteLibraryUserRequest) {
+        libraryUserRepository.deleteById(deleteLibraryUserRequest.getId());
     }
 
     public LibraryUserResponse getUsers(List<String> selectedRoles, int page, String order, String sortedColumn, String searchColumn, String searchValue) {
