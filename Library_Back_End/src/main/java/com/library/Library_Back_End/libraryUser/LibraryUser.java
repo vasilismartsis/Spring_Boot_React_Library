@@ -20,16 +20,7 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @Setter
 public class LibraryUser {
     @Id
-    @Column
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column
     private String username;

@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Martsis
+      changes:
+        - sqlFile:
+            path: dml/testdata/bookData.sql

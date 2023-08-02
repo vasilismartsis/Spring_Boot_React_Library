@@ -1,0 +1,67 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: Martsis
+      changes:
+        - createTable:
+            tableName: library_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: created_by
+                  type: BIGINT
+              - column:
+                  name: last_modified_by
+                  type: BIGINT
+              - column:
+                  name: creation_date
+                  type: TIMESTAMP
+              - column:
+                  name: last_modified_date
+                  type: TIMESTAMP
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: role_id
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            baseTableName: user_role
+            baseColumnNames: user_id
+            referencedTableName: library_user
+            referencedColumnNames: id
+            constraintName: fk_user_role_user_id
+        - addForeignKeyConstraint:
+            baseTableName: user_role
+            baseColumnNames: role_id
+            referencedTableName: role
+            referencedColumnNames: id
+            constraintName: fk_user_role_role_id
+        - addForeignKeyConstraint:
+            baseTableName: library_user
+            baseColumnNames: created_by
+            referencedTableName: library_user
+            referencedColumnNames: id
+            constraintName: fk_library_user_created_by
+        - addForeignKeyConstraint:
+            baseTableName: library_user
+            baseColumnNames: last_modified_by
+            referencedTableName: library_user
+            referencedColumnNames: id
+            constraintName: fk_library_user_last_modified_by
+        - sqlFile:
+            path: db/changelog/dml/testdata/libraryUserData.sql

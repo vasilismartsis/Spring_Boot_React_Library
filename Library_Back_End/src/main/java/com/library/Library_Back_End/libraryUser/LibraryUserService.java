@@ -44,7 +44,7 @@ public class LibraryUserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.auditingConfig = auditingConfig;
         libraryUserSpecifications = new LibraryUserSpecifications();
-        saveDummyLibraryUsers();
+//        saveDummyLibraryUsers();
     }
 
     @Override

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: /db/changelog/ddl/role.yaml
+  - include:
+      file: /db/changelog/ddl/libraryUser.yaml
+  - include:
+      file: /db/changelog/ddl/book.yaml
+  - include:
+      file: /db/changelog/ddl/reservation.yaml
