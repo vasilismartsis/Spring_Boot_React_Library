@@ -25,10 +25,10 @@ databaseChangeLog:
                   name: expiration_date
                   type: DATE
               - column:
-                  name: created_by
+                  name: created_by_id
                   type: BIGINT
               - column:
-                  name: last_modified_by
+                  name: last_modified_by_id
                   type: BIGINT
               - column:
                   name: creation_date
@@ -50,13 +50,13 @@ databaseChangeLog:
             constraintName: fk_reservation_book
         - addForeignKeyConstraint:
             baseTableName: reservation
-            baseColumnNames: created_by
+            baseColumnNames: created_by_id
             referencedTableName: library_user
             referencedColumnNames: id
             constraintName: fk_reservation_created_by
         - addForeignKeyConstraint:
             baseTableName: reservation
-            baseColumnNames: last_modified_by
+            baseColumnNames: last_modified_by_id
             referencedTableName: library_user
             referencedColumnNames: id
             constraintName: fk_reservation_last_modified_by

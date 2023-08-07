@@ -1,6 +1,7 @@
 package com.library.Library_Back_End.book;
 
 import com.itextpdf.text.DocumentException;
+import com.library.Library_Back_End.Exception.OutOfStockException;
 import com.library.Library_Back_End.book.dto.AddBookRequest;
 import com.library.Library_Back_End.book.dto.BookResponse;
 import com.library.Library_Back_End.book.dto.DeleteBookRequest;
@@ -45,14 +46,9 @@ public class BookController {
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<String> addBook(@RequestBody AddBookRequest addBookRequest) {
-        try {
-            bookService.addBook(addBookRequest);
-
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-        }
+    public ResponseEntity<String> addBook(@RequestBody AddBookRequest addBookRequest) throws OutOfStockException {
+        bookService.addBook(addBookRequest);
+        return ResponseEntity.ok("OK");
     }
 
     @PostMapping("/editBook")

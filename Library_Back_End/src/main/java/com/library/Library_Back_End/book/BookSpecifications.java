@@ -15,7 +15,7 @@ public class BookSpecifications {
             Predicate genrePredicate = root.get("genre").in(genres);
 
             Expression<String> columnExpression = root.get(column.toLowerCase()).as(String.class);
-            Predicate valuePredicate = criteriaBuilder.like(columnExpression, "%" + value.toLowerCase() + "%");
+            Predicate valuePredicate = criteriaBuilder.like(criteriaBuilder.lower(columnExpression), "%" + value.toLowerCase() + "%");
 
             return criteriaBuilder.and(genrePredicate, valuePredicate);
         };
@@ -24,7 +24,7 @@ public class BookSpecifications {
     public Specification<Book> findAllByColumnContaining(String column, String value) {
         return (root, query, criteriaBuilder) -> {
             Expression<String> columnExpression = root.get(column.toLowerCase()).as(String.class);
-            Predicate valuePredicate = criteriaBuilder.like(columnExpression, "%" + value.toLowerCase() + "%");
+            Predicate valuePredicate = criteriaBuilder.like(criteriaBuilder.lower(columnExpression), "%" + value.toLowerCase() + "%");
 
             return criteriaBuilder.and(valuePredicate);
         };

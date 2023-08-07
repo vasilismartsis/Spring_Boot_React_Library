@@ -22,12 +22,8 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginAuthResponse> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            LoginHeader loginHeader = loginService.login(loginRequest);
-            return new ResponseEntity<>(new LoginAuthResponse(loginHeader.getToken(), loginHeader.getRole()), HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            // Authentication failed
-            return new ResponseEntity<>(new LoginAuthResponse("Wrong Credentials!"), HttpStatus.UNAUTHORIZED);
-        }
+        LoginHeader loginHeader = loginService.login(loginRequest);
+        return new ResponseEntity<>(new LoginAuthResponse(loginHeader.getToken(), loginHeader.getRole()), HttpStatus.OK);
+
     }
 }

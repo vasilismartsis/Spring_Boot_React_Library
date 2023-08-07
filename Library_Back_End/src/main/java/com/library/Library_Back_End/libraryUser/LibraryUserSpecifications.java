@@ -6,10 +6,12 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class LibraryUserSpecifications {
     public Specification<LibraryUser> findAllByRoleAndColumnContaining(List<RoleEnum> roles, String column, String value) {
         return (root, query, criteriaBuilder) -> {
@@ -22,7 +24,7 @@ public class LibraryUserSpecifications {
             } else {
                 columnExpression = root.get(column).as(String.class);
             }
-            Predicate valuePredicate = criteriaBuilder.like(columnExpression, "%" + value + "%");
+            Predicate valuePredicate = criteriaBuilder.like(criteriaBuilder.lower(columnExpression), "%" + value + "%");
 
             return criteriaBuilder.and(rolePredicate, valuePredicate);
         };
@@ -36,7 +38,7 @@ public class LibraryUserSpecifications {
             } else {
                 columnExpression = root.get(column).as(String.class);
             }
-            Predicate valuePredicate = criteriaBuilder.like(columnExpression, "%" + value + "%");
+            Predicate valuePredicate = criteriaBuilder.like(criteriaBuilder.lower(columnExpression), "%" + value + "%");
 
             return criteriaBuilder.and(valuePredicate);
         };

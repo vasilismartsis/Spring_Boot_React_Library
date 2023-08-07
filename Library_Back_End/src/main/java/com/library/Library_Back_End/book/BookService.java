@@ -1,6 +1,7 @@
 package com.library.Library_Back_End.book;
 
 import com.itextpdf.text.DocumentException;
+import com.library.Library_Back_End.Exception.OutOfStockException;
 import com.library.Library_Back_End.auditing.AuditingConfig;
 import com.library.Library_Back_End.book.BookExport.*;
 import com.library.Library_Back_End.book.dto.*;
@@ -107,7 +108,7 @@ public class BookService {
         return bookConfiguration.genres();
     }
 
-    public void addBook(AddBookRequest addBookRequest) {
+    public void addBook(AddBookRequest addBookRequest) throws OutOfStockException {
         Book book = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre(), auditingConfig.getAuditor(), auditingConfig.getAuditor());
         bookRepository.save(book);
     }

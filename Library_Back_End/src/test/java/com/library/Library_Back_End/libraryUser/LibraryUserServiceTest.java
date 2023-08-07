@@ -16,31 +16,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class LibraryUserServiceTest {
 
     @Mock
     private LibraryUserRepository libraryUserRepository;
-
     @Mock
-    private LibraryUserConfiguration libraryUserConfiguration;
-
+    private LibraryUserSpecifications libraryUserSpecifications;
     @Mock
     private LoginService loginService;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
     @Mock
     private AuditingConfig auditingConfig;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
     private LibraryUserService libraryUserService;
 
@@ -81,11 +74,13 @@ class LibraryUserServiceTest {
         String searchColumn = "";
         String searchValue = "";
 
-        LibraryUser user1 = new LibraryUser("user1", "password1", Arrays.asList(new Role(RoleEnum.CUSTOMER)), null, null);
-        LibraryUser user2 = new LibraryUser("user2", "password2", Arrays.asList(new Role(RoleEnum.ADMIN)), null, null);
+        LibraryUser user1 = new LibraryUser("user1", "password1", Arrays.asList(new Role(RoleEnum.CUSTOMER)));
+        LibraryUser user2 = new LibraryUser("user2", "password2", Arrays.asList(new Role(RoleEnum.ADMIN)));
         Page<LibraryUser> userPage = new PageImpl<>(Arrays.asList(user1, user2));
 
         when(libraryUserRepository.count()).thenReturn(2L);
+        Specification<LibraryUser> mockSpecification = mock(Specification.class);
+        when(libraryUserSpecifications.findAllByRole(any(List.class))).thenReturn(mockSpecification);
         when(libraryUserRepository.findAll(any(Specification.class), any(org.springframework.data.domain.Pageable.class))).thenReturn(userPage);
 
         LibraryUserResponse response = libraryUserService.getUsers(selectedRoles, page, order, sortedColumn, searchColumn, searchValue);
@@ -110,6 +105,8 @@ class LibraryUserServiceTest {
         Page<LibraryUser> userPage = new PageImpl<>(Arrays.asList(user1, user2));
 
         when(libraryUserRepository.count()).thenReturn(2L);
+        Specification<LibraryUser> mockSpecification = mock(Specification.class);
+        when(libraryUserSpecifications.findAllByColumnContaining(any(String.class), any(String.class))).thenReturn(mockSpecification);
         when(libraryUserRepository.findAll(any(Specification.class), any(org.springframework.data.domain.Pageable.class))).thenReturn(userPage);
 
         LibraryUserResponse response = libraryUserService.getUsers(selectedRoles, page, order, sortedColumn, searchColumn, searchValue);
@@ -134,6 +131,8 @@ class LibraryUserServiceTest {
         Page<LibraryUser> userPage = new PageImpl<>(Arrays.asList(user2));
 
         when(libraryUserRepository.count()).thenReturn(1L);
+        Specification<LibraryUser> mockSpecification = mock(Specification.class);
+        when(libraryUserSpecifications.findAllByRoleAndColumnContaining(any(List.class), any(String.class), any(String.class))).thenReturn(mockSpecification);
         when(libraryUserRepository.findAll(any(Specification.class), any(org.springframework.data.domain.Pageable.class))).thenReturn(userPage);
 
         LibraryUserResponse response = libraryUserService.getUsers(selectedRoles, page, order, sortedColumn, searchColumn, searchValue);

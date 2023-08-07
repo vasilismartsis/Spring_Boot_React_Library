@@ -7,3 +7,5 @@ databaseChangeLog:
       file: /db/changelog/ddl/book.yaml
   - include:
       file: /db/changelog/ddl/reservation.yaml
+  - include:
+      file: /db/changelog/dml/data.yaml

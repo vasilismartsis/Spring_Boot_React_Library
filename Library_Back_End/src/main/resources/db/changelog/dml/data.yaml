@@ -4,4 +4,8 @@ databaseChangeLog:
       author: Martsis
       changes:
         - sqlFile:
-            path: dml/testdata/bookData.sql
+            path: db/changelog/dml/testdata/roleData.sql
+        - sqlFile:
+            path: db/changelog/dml/testdata/libraryUserData.sql
+        - sqlFile:
+            path: db/changelog/dml/testdata/bookData.sql

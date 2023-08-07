@@ -1,6 +1,7 @@
 package com.library.Library_Back_End.book;
 
 import com.itextpdf.text.DocumentException;
+import com.library.Library_Back_End.Exception.OutOfStockException;
 import com.library.Library_Back_End.auditing.AuditingConfig;
 import com.library.Library_Back_End.book.BookExport.PDFBookExport;
 import com.library.Library_Back_End.book.BookExport.PPTXBookExport;
@@ -36,7 +37,6 @@ import static org.mockito.Mockito.when;
 class BookServiceTest {
 
     private BookService bookService;
-
     private LibraryUserRepository libraryUserRepository;
     private BookRepository bookRepository;
     private ReservationRepository reservationRepository;
@@ -46,9 +46,7 @@ class BookServiceTest {
     private XLSXBookExport xlsxBookExport;
     private PDFBookExport pdfBookExport;
     private PPTXBookExport pptxBookExport;
-
     private List<Book> mockBooks;
-
     private List<LibraryUser> mockLibraryUsers;
 
 
@@ -192,7 +190,7 @@ class BookServiceTest {
     }
 
     @Test
-    void testAddBook() {
+    void testAddBook() throws OutOfStockException {
         // Arrange
         AddBookRequest addBookRequest = new AddBookRequest("New Book", 5, Genre.SCI_FI, mockLibraryUsers.get(0).getUsername());
         Book expectedBook = new Book(addBookRequest.getTitle(), addBookRequest.getQuantity(), addBookRequest.getGenre(), auditingConfig.getAuditor(), auditingConfig.getAuditor());

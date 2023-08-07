@@ -6,6 +6,7 @@ import com.library.Library_Back_End.libraryUser.dto.*;
 import com.library.Library_Back_End.login.LoginService;
 import com.library.Library_Back_End.login.dto.LoginAuthResponse;
 import com.library.Library_Back_End.login.dto.LoginRequest;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.*;
@@ -29,7 +30,6 @@ import java.util.stream.Collectors;
 @Service
 public class LibraryUserService implements UserDetailsService {
     private final LibraryUserRepository libraryUserRepository;
-    private final LibraryUserConfiguration libraryUserConfiguration;
     private final LibraryUserSpecifications libraryUserSpecifications;
     private final LoginService loginService;
     private final AuditingConfig auditingConfig;
@@ -37,14 +37,27 @@ public class LibraryUserService implements UserDetailsService {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LibraryUserService(LibraryUserRepository libraryUserRepository, LibraryUserConfiguration libraryUserConfiguration, @Lazy LoginService loginService, PasswordEncoder passwordEncoder, AuditingConfig auditingConfig) {
+    public LibraryUserService(LibraryUserRepository libraryUserRepository, LibraryUserSpecifications libraryUserSpecifications, @Lazy LoginService loginService, PasswordEncoder passwordEncoder, AuditingConfig auditingConfig) {
         this.libraryUserRepository = libraryUserRepository;
-        this.libraryUserConfiguration = libraryUserConfiguration;
         this.loginService = loginService;
         this.passwordEncoder = passwordEncoder;
         this.auditingConfig = auditingConfig;
-        libraryUserSpecifications = new LibraryUserSpecifications();
-//        saveDummyLibraryUsers();
+        this.libraryUserSpecifications = libraryUserSpecifications;
+    }
+
+    @PostConstruct
+    private void init() {
+        changeDefaultUsersPassword();
+    }
+
+    private void changeDefaultUsersPassword() {
+        changePassword(new ChangePasswordRequest("System", "System"));
+        changePassword(new ChangePasswordRequest("a", "a"));
+        changePassword(new ChangePasswordRequest("user", "password"));
+    }
+
+    private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRole().toString())).collect(Collectors.toList());
     }
 
     @Override
@@ -53,27 +66,11 @@ public class LibraryUserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(libraryUser.getUsername(), libraryUser.getPassword(), mapRolesToAuthorities(libraryUser.getRoles()));
     }
 
-    private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRole().toString())).collect(Collectors.toList());
-    }
-
-    private void saveDummyLibraryUsers() {
-        libraryUserRepository.saveAll(libraryUserConfiguration.libraryUsers());
-        List<LibraryUser> libraryUsers = libraryUserRepository.findAll();
-        List<LibraryUser> updatedLibraryUsers = libraryUsers.stream()
-                .peek(user -> {
-                    user.setCreatedBy(libraryUserRepository.findByUsername("System").orElseThrow());
-                    user.setLastModifiedBy(libraryUserRepository.findByUsername("System").orElseThrow());
-                })
-                .collect(Collectors.toList());
-        libraryUserRepository.saveAll(updatedLibraryUsers);
-    }
-
     @Transactional
     public void changePassword(ChangePasswordRequest changePasswordRequest) {
-        String encodedPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+        String encodedNewPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
         LibraryUser libraryUser = libraryUserRepository.findByUsername(changePasswordRequest.getUsername()).orElseThrow();
-        libraryUser.setPassword(encodedPassword);
+        libraryUser.setPassword(encodedNewPassword);
         libraryUserRepository.save(libraryUser);
     }
 

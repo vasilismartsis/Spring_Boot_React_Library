@@ -7,19 +7,13 @@ import com.library.Library_Back_End.auditing.AuditingConfig;
 import com.library.Library_Back_End.book.Book;
 import com.library.Library_Back_End.book.BookRepository;
 import com.library.Library_Back_End.libraryUser.LibraryUser;
-import com.library.Library_Back_End.libraryUser.LibraryUserConfiguration;
 import com.library.Library_Back_End.libraryUser.LibraryUserRepository;
-import com.library.Library_Back_End.libraryUser.Role;
-import com.library.Library_Back_End.libraryUser.dto.DeleteLibraryUserRequest;
-import com.library.Library_Back_End.libraryUser.dto.EditLibraryUserRequest;
 import com.library.Library_Back_End.reservation.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,7 +21,6 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -36,15 +29,14 @@ public class ReservationService {
     private final BookRepository bookRepository;
 
     private final LibraryUserRepository libraryUserRepository;
-    private final LibraryUserConfiguration libraryUserConfiguration;
     private final ReservationSpecifications reservationSpecifications;
     private final AuditingConfig auditingConfig;
 
-    public ReservationService(LibraryUserRepository libraryUserRepository, ReservationRepository reservationRepository, BookRepository bookRepository, LibraryUserConfiguration libraryUserConfiguration, AuditingConfig auditingConfig) {
+    public ReservationService(LibraryUserRepository libraryUserRepository, ReservationRepository reservationRepository, BookRepository bookRepository, AuditingConfig auditingConfig) {
         this.libraryUserRepository = libraryUserRepository;
         this.reservationRepository = reservationRepository;
         this.bookRepository = bookRepository;
-        this.libraryUserConfiguration = libraryUserConfiguration;
+
         this.auditingConfig = auditingConfig;
         reservationSpecifications = new ReservationSpecifications();
 
@@ -63,7 +55,11 @@ public class ReservationService {
         if (!searchColumn.equals("")) {
             reservationPage = reservationRepository.findAll(reservationSpecifications.findAllByLibraryUserAndColumnContaining(libraryUser, searchColumn, searchValue), pageable);
         } else {
-            reservationPage = reservationRepository.findAll(pageable);
+            if (!user.equals("")) {
+                reservationPage = reservationRepository.findAll(reservationSpecifications.findAllByLibraryUser(libraryUser), pageable);
+            } else {
+                reservationPage = reservationRepository.findAll(pageable);
+            }
         }
 
         List<SingleReservationResponse> singleReservationResponses = reservationPage
@@ -92,8 +88,8 @@ public class ReservationService {
 
         if (book.getQuantity() > 0) {
             Reservation reservation = new Reservation(libraryUser, book, LocalDate.now(), LocalDate.now().plusDays(7), auditingConfig.getAuditor(), auditingConfig.getAuditor());
-            decreaseBookQuantity(book);
             reservationRepository.save(reservation);
+            decreaseBookQuantity(book);
         } else {
             throw new OutOfStockException();
         }

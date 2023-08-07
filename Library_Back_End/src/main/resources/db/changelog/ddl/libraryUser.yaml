@@ -19,10 +19,10 @@ databaseChangeLog:
                   name: password
                   type: VARCHAR(255)
               - column:
-                  name: created_by
+                  name: created_by_id
                   type: BIGINT
               - column:
-                  name: last_modified_by
+                  name: last_modified_by_id
                   type: BIGINT
               - column:
                   name: creation_date
@@ -53,15 +53,13 @@ databaseChangeLog:
             constraintName: fk_user_role_role_id
         - addForeignKeyConstraint:
             baseTableName: library_user
-            baseColumnNames: created_by
+            baseColumnNames: created_by_id
             referencedTableName: library_user
             referencedColumnNames: id
             constraintName: fk_library_user_created_by
         - addForeignKeyConstraint:
             baseTableName: library_user
-            baseColumnNames: last_modified_by
+            baseColumnNames: last_modified_by_id
             referencedTableName: library_user
             referencedColumnNames: id
             constraintName: fk_library_user_last_modified_by
-        - sqlFile:
-            path: db/changelog/dml/testdata/libraryUserData.sql
