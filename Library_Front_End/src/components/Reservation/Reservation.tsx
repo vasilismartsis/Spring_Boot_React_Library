@@ -17,7 +17,7 @@ const Reservation: React.FC<ReservationProps> = (props) => {
     setSearchValue,
     doEditReservation,
     doDeleteReservation,
-  } = useReservations();
+  } = useReservations("");
 
   return (
     <>

@@ -31,7 +31,9 @@ export interface ReservationsState {
   ) => void;
 }
 
-export const useReservations: () => ReservationsState = () => {
+export const useReservations: (username: string | null) => ReservationsState = (
+  username
+) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sorterResult, setSorterResult] = useState<SorterResult<Reservation>>(
     {}
@@ -45,11 +47,7 @@ export const useReservations: () => ReservationsState = () => {
     const ip = new URL(currentURL).hostname;
     return axios
       .get<any, AxiosResponse<ReservationResource>>(
-        `http://${ip}:8080/api/reservation/getReservations?user=${sessionStorage.getItem(
-          "username"
-        )}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${
-          sorterResult.columnKey
-        }&searchColumn=${searchColumn}&searchValue=${searchValue}`,
+        `http://${ip}:8080/api/reservation/getReservations?user=${username}&page=${currentPage}&order=${sorterResult.order}&sortedColumn=${sorterResult.columnKey}&searchColumn=${searchColumn}&searchValue=${searchValue}`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -136,8 +134,6 @@ export const useReservations: () => ReservationsState = () => {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
-    console.log(values);
-
     deleteReservationMutation.mutate(values, {
       onSuccess,
       onError: (error) => {

@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Reservation } from "../../Reservation/types";
 import { useReservations } from "../../Reservation/useReservations";
 
-export interface useDeleteReservationState {
+export interface useReturnBookState {
   handleDeleteReservationOk: () => void;
   setDeletedReservation: React.Dispatch<React.SetStateAction<Reservation>>;
 }
 
-export const useDeleteReservation: () => useDeleteReservationState = () => {
+export const useReturnBook: () => useReturnBookState = () => {
   const [deletedReservation, setDeletedReservation] = useState<Reservation>(
     {} as Reservation
   );
@@ -26,9 +26,10 @@ export const useDeleteReservation: () => useDeleteReservationState = () => {
     setSearchValue,
     doEditReservation,
     doDeleteReservation,
-  } = useReservations();
+  } = useReservations(sessionStorage.getItem("username"));
 
   const handleDeleteReservationOk = () => {
+    console.log("first");
     const mappedValues = {
       ...deletedReservation,
       bookTitle: deletedReservation.bookTitle,

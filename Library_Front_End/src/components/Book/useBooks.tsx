@@ -166,7 +166,6 @@ export const useBooks: () => BooksState = () => {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
-    console.log(values);
     deleteBookMutation.mutate(values, {
       onSuccess,
       onError: (error) => {

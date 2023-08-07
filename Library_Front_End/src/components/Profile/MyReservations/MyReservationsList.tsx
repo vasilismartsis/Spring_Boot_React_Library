@@ -17,7 +17,7 @@ import { SorterResult } from "antd/es/table/interface";
 import { SearchOutlined } from "@ant-design/icons";
 import { Reservation, ReservationColumn } from "../../Reservation/types";
 import { useReservations } from "../../Reservation/useReservations";
-import { useDeleteReservation } from "../../Reservation/useDeleteReservation";
+import { useReturnBook } from "./useReturnBook";
 
 export interface MyReservationListProps {}
 
@@ -36,14 +36,9 @@ const MyReservationList: React.FC<MyReservationListProps> = (props) => {
     setSearchValue,
     doEditReservation,
     doDeleteReservation,
-  } = useReservations();
+  } = useReservations(sessionStorage.getItem("username"));
 
-  const { handleDeleteReservationOk, setDeletedReservation } =
-    useDeleteReservation();
-
-  useEffect(() => {
-    reservationRefetch();
-  }, []);
+  const { handleDeleteReservationOk, setDeletedReservation } = useReturnBook();
 
   useEffect(() => {
     if (!!reservationError) {
@@ -98,7 +93,7 @@ const MyReservationList: React.FC<MyReservationListProps> = (props) => {
           <>
             <Popconfirm
               title="Delete User"
-              description="Are you sure to delete this user?"
+              description="Are you sure to return this book?"
               onConfirm={handleDeleteReservationOk}
               okText="Yes"
               cancelText="No"

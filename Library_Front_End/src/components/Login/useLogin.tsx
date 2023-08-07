@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { error } from "jquery";
 import { useCallback, useEffect, useState } from "react";
 import { LoginAuthResponse, LoginForm } from "./types";
@@ -20,36 +20,36 @@ export const useLogin: () => LoginStateProps = () => {
   const postLogin = (values: LoginForm) => {
     const currentURL = window.location.href;
     const ip = new URL(currentURL).hostname;
-    return axios.post(`http://${ip}:8080/api/login`, values);
+    return axios
+      .post<any, AxiosResponse<LoginAuthResponse>>(
+        `http://${ip}:8080/api/login`,
+        values
+      )
+      .then((r) => r.data);
   };
 
-  const loginMutation = useMutation("loginQuery", postLogin);
+  const { mutate } = useMutation("loginQuery", postLogin);
 
   const doLogin = (
     values: LoginForm,
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
-    loginMutation.mutate(values, {
+    mutate(values, {
       onSuccess: (res) => {
-        const base64Url = (res.data as LoginAuthResponse).accessToken.split(
-          "."
-        )[1];
+        const base64Url = res.accessToken.split(".")[1];
         const base64 = base64Url.replace("-", "+").replace("_", "/");
         const tokenBase64Object = JSON.parse(window.atob(base64));
         const tokenUserName = tokenBase64Object["sub"];
         sessionStorage.setItem("username", tokenUserName);
-        sessionStorage.setItem(
-          "token",
-          (res.data as LoginAuthResponse).accessToken
-        );
-        sessionStorage.setItem("role", (res.data as LoginAuthResponse).role);
+        sessionStorage.setItem("token", res.accessToken);
+        sessionStorage.setItem("role", res.role);
         onSuccess();
       },
       onError: (error) => {
-        onError(
-          error instanceof Error ? error.message : "Unknown error occurred"
-        );
+        if (error instanceof AxiosError) {
+          onError(error.response?.data);
+        }
       },
     });
   };

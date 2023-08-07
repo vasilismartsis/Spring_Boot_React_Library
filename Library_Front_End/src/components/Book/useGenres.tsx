@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, MenuProps, Pagination, Space, message } from "antd";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
@@ -25,7 +25,14 @@ export const useGenres: () => GenresState = () => {
       .then((r) => r.data);
   };
 
-  const { error, data: genres = [] } = useQuery("getGenres", getGenres);
+  const { error, data: genres = [] } = useQuery("getGenres", getGenres, {
+    enabled: true,
+    onError(err: AxiosError) {
+      if (err.code == AxiosError.ERR_BAD_REQUEST) {
+        window.location.href = "/login";
+      }
+    },
+  });
 
   return {
     genres,
