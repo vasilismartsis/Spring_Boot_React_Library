@@ -52,7 +52,8 @@ public class JWTToken {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect");
+//            throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect");
+            return false;
         }
     }
 }

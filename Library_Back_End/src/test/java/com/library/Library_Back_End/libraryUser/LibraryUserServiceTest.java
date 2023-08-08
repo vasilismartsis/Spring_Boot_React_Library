@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class LibraryUserServiceTest {
-
     @Mock
     private LibraryUserRepository libraryUserRepository;
     @Mock

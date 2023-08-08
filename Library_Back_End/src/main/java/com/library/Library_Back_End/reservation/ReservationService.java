@@ -24,10 +24,8 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
-
     private final LibraryUserRepository libraryUserRepository;
     private final ReservationSpecifications reservationSpecifications;
     private final AuditingConfig auditingConfig;
@@ -39,7 +37,6 @@ public class ReservationService {
 
         this.auditingConfig = auditingConfig;
         reservationSpecifications = new ReservationSpecifications();
-
     }
 
     public ReservationResponse getReservations(String user, @PageableDefault(size = 5) int page, String order, String sortedColumn, String searchColumn, String searchValue) {

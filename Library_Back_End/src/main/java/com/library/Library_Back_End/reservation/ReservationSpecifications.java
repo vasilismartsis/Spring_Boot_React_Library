@@ -4,9 +4,10 @@ import com.library.Library_Back_End.libraryUser.LibraryUser;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ReservationSpecifications {
-
     public Specification<Reservation> findAllByLibraryUserAndColumnContaining(LibraryUser libraryUser, String column, String value) {
         return (root, query, criteriaBuilder) -> {
             Expression<String> columnExpression;

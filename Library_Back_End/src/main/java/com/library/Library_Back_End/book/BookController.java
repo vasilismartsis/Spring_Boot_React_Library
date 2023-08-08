@@ -26,6 +26,11 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    @GetMapping("/hello")
+    public String hello(String name) {
+        return String.format("Hello, %s", name);
+    }
+
     @GetMapping("/getBooks")
     public BookResponse getBooks(
             @RequestParam ArrayList<String> genres,
