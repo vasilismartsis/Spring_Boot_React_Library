@@ -47,7 +47,7 @@ export const BookContext = createContext<BookContextValue>({
   totalBookCopies: 0,
   totalBookCopiesReserved: 0,
   books: [],
-  bookError: {},
+  bookError: "",
   setCurrentPage: () => {},
   currentPage: 1,
   pageSize: 5,

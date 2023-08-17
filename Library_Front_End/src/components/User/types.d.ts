@@ -12,8 +12,8 @@ export type LibraryUser = {
   roles: string[];
   createdBy: string;
   lastModifiedBy: string;
-  creationDate: string;
-  lastModifiedDate: string;
+  creationDate: Date;
+  lastModifiedDate: Date;
 };
 
 export interface UserColumn extends ColumnType<LibraryUser> {

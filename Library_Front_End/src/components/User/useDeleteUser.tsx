@@ -1,8 +1,9 @@
 import { message } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useUsers } from "./useUsers";
 import { LibraryUser } from "./types";
+import { UserContext } from "./UserContext";
 
 export interface useDeleteUserState {
   handleDeleteUserOk: () => void;
@@ -15,7 +16,7 @@ export const useDeleteUser: () => useDeleteUserState = () => {
   );
 
   const {
-    totalUsers: totalUserNumber,
+    totalUsers,
     users,
     userError,
     roles,
@@ -28,9 +29,10 @@ export const useDeleteUser: () => useDeleteUserState = () => {
     setSearchColumn,
     setSearchValue,
     doEditUser,
+    doAddUser,
     doDeleteUser,
     setSelectedRoles,
-  } = useUsers();
+  } = useContext(UserContext);
 
   const handleDeleteUserOk = () => {
     doDeleteUser(deletedUser, onDeleteUserSuccess, onDeleteUserError);

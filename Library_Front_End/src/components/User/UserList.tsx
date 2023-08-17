@@ -14,7 +14,7 @@ import {
 } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
 import { useUsers } from "./useUsers";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SorterResult, TablePaginationConfig } from "antd/es/table/interface";
 import { Book } from "../Book/types";
 import { AddUserForm, EditUserForm, LibraryUser, UserColumn } from "./types";
@@ -28,12 +28,13 @@ import { useEditUser } from "./useEditUser";
 import type { DraggableData, DraggableEvent } from "react-draggable";
 import Draggable from "react-draggable";
 import { useDeleteUser } from "./useDeleteUser";
+import { UserContext } from "./UserContext";
 
 const UserList: React.FC = () => {
   const [tableData, setTableData] = useState<LibraryUser[]>([]);
 
   const {
-    totalUsers: totalUserNumber,
+    totalUsers,
     users,
     userError,
     roles,
@@ -49,7 +50,7 @@ const UserList: React.FC = () => {
     doAddUser,
     doDeleteUser,
     setSelectedRoles,
-  } = useUsers();
+  } = useContext(UserContext);
 
   const {
     openAddUserModal,
@@ -225,7 +226,7 @@ const UserList: React.FC = () => {
     },
     pageSize: 5,
     current: currentPage,
-    total: totalUserNumber,
+    total: totalUsers,
     defaultCurrent: 1,
   };
 

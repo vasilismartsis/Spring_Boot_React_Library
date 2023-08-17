@@ -1,8 +1,9 @@
 import { FormInstance, message } from "antd";
 import { EditUserForm, LibraryUser } from "./types";
 import { useUsers } from "./useUsers";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useForm } from "antd/es/form/Form";
+import { UserContext } from "./UserContext";
 
 export interface useEditUserState {
   openEditUserModal: boolean;
@@ -23,7 +24,7 @@ export const useEditUser: () => useEditUserState = () => {
   const [editedUser, setEditedUser] = useState<LibraryUser>({} as LibraryUser);
 
   const {
-    totalUsers: totalUserNumber,
+    totalUsers,
     users,
     userError,
     roles,
@@ -37,8 +38,9 @@ export const useEditUser: () => useEditUserState = () => {
     setSearchValue,
     doEditUser,
     doAddUser,
+    doDeleteUser,
     setSelectedRoles,
-  } = useUsers();
+  } = useContext(UserContext);
 
   useEffect(() => {
     if (Object.keys(editedUser).length > 0) {

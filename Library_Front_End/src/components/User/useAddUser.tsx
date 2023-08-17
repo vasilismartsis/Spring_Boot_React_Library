@@ -1,8 +1,9 @@
 import { message } from "antd";
 import { FormInstance, useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { AddUserForm } from "./types";
 import { useUsers } from "./useUsers";
+import { UserContext } from "./UserContext";
 
 export interface useAddUserState {
   openAddUserModal: boolean;
@@ -19,7 +20,7 @@ export const useAddUser: () => useAddUserState = () => {
   const [addUserForm] = useForm<AddUserForm>();
 
   const {
-    totalUsers: totalUserNumber,
+    totalUsers,
     users,
     userError,
     roles,
@@ -33,8 +34,9 @@ export const useAddUser: () => useAddUserState = () => {
     setSearchValue,
     doEditUser,
     doAddUser,
+    doDeleteUser,
     setSelectedRoles,
-  } = useUsers();
+  } = useContext(UserContext);
 
   const handleAddUser = () => {
     setOpenAddUserModal(true);

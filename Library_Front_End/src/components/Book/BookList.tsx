@@ -430,8 +430,8 @@ const BookList: React.FC = () => {
         />
       </Modal>
       <Modal
-        key="editUserModal"
-        title={<h1 className="table-label">Edit User</h1>}
+        key="editBookModal"
+        title={<h1 className="table-label">Edit Book</h1>}
         open={openEditBookModal}
         onOk={handleEditBookOk}
         onCancel={handleEditBookCancel}

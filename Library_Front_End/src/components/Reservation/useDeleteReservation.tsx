@@ -50,11 +50,9 @@ export const useDeleteReservation: () => useDeleteReservationState = () => {
   };
 
   const onDeleteReservationError = (error: any) => {
-    {
-      message.info(
-        <span style={{ fontSize: "30px" }}>Internal Error: {error}</span>
-      );
-    }
+    message.info(
+      <span style={{ fontSize: "30px" }}>Internal Error: {error}</span>
+    );
   };
   return {
     handleDeleteReservationOk,
