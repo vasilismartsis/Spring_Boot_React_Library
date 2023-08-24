@@ -43,6 +43,10 @@ dependencies {
 
     implementation 'org.liquibase:liquibase-core:4.23.0'
 
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation "org.springframework.security:spring-security-messaging"
+//    implementation "org.springframework.security:spring-security-data"
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
