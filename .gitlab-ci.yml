@@ -21,18 +21,6 @@ before_script:
   - echo $(pwd)
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
   - export GRADLE_USER_HOME
-  - echo $(GRADLE_USER_HOME)
-
-build image:
-  image: docker
-  services:
-    - docker:dind
-  variables:
-    DOCKER_IMAGE_TAG: $CI_COMMIT_SHA
-  script:
-    - docker build -t my-spring-app:$DOCKER_IMAGE_TAG .
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY_IMAGE/my-spring-app:$DOCKER_IMAGE_TAG
 
 build:
   stage: build
