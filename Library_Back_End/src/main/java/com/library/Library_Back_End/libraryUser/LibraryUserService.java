@@ -31,30 +31,29 @@ import java.util.stream.Collectors;
 public class LibraryUserService implements UserDetailsService {
     private final LibraryUserRepository libraryUserRepository;
     private final LibraryUserSpecifications libraryUserSpecifications;
-    private final LoginService loginService;
+    //    private final LoginService loginService;
     private final AuditingConfig auditingConfig;
 
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LibraryUserService(LibraryUserRepository libraryUserRepository, LibraryUserSpecifications libraryUserSpecifications, @Lazy LoginService loginService, PasswordEncoder passwordEncoder, AuditingConfig auditingConfig) {
+    public LibraryUserService(LibraryUserRepository libraryUserRepository, LibraryUserSpecifications libraryUserSpecifications, PasswordEncoder passwordEncoder, AuditingConfig auditingConfig) {
         this.libraryUserRepository = libraryUserRepository;
-        this.loginService = loginService;
         this.passwordEncoder = passwordEncoder;
         this.auditingConfig = auditingConfig;
         this.libraryUserSpecifications = libraryUserSpecifications;
     }
 
-    @PostConstruct
-    private void init() {
-        changeDefaultUsersPassword();
-    }
-
-    private void changeDefaultUsersPassword() {
-        changePassword(new ChangePasswordRequest("System", "System"));
-        changePassword(new ChangePasswordRequest("a", "a"));
-        changePassword(new ChangePasswordRequest("user", "password"));
-    }
+//    @PostConstruct
+//    private void init() {
+//        changeDefaultUsersPassword();
+//    }
+//
+//    private void changeDefaultUsersPassword() {
+//        changePassword(new ChangePasswordRequest("System", "System"));
+//        changePassword(new ChangePasswordRequest("a", "a"));
+//        changePassword(new ChangePasswordRequest("user", "password"));
+//    }
 
     private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRole().toString())).collect(Collectors.toList());

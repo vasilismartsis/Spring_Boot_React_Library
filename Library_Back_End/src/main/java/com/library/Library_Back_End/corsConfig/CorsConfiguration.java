@@ -1,4 +1,4 @@
-package com.library.Library_Back_End.cosConfig;
+package com.library.Library_Back_End.corsConfig;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

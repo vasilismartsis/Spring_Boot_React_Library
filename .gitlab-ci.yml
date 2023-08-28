@@ -12,6 +12,11 @@
 
 image: gradle:alpine
 
+stages:
+  - build
+  - test
+  - packaging
+
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
@@ -36,7 +41,10 @@ test:
       - build
       - .gradle
 
-deploy:
-  stage: deploy
-  script: echo "Define your deployment script!"
-  environment: production
+dockerize-backend:
+  stage: packaging
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - docker ps

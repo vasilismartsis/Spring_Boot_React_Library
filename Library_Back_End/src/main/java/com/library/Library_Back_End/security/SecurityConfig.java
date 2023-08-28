@@ -54,11 +54,9 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-                                               .requestMatchers("/api/login")
-                                               .permitAll()
-                                               .anyRequest()
-                                               .authenticated()
-                                      )
+                        .requestMatchers("/api/login", "/ws/** ").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
