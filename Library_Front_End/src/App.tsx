@@ -12,6 +12,7 @@ import { Layout } from "antd";
 import { ReactQueryDevtools } from "react-query-devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
 import User from "./components/User/User";
+import WebSocketTest from "./components/WebSocket/WebSocketTest";
 
 function App() {
   return (
@@ -28,10 +29,11 @@ function App() {
                 </>
               }
             />
+            <Route path="webSocketTest" element={<WebSocketTest />} />
             <Route
               path="books"
               element={
-                <>{sessionStorage.getItem("role") ? <Book /> : <Login />}</>
+                <>{sessionStorage.getItem("role") ? <Book /> : <Book />}</>
               }
             />
             <Route
@@ -41,7 +43,7 @@ function App() {
                   {sessionStorage.getItem("role") == "ADMIN" ? (
                     <Reservation />
                   ) : (
-                    <MainPage />
+                    <Login />
                   )}
                 </>
               }
@@ -53,7 +55,7 @@ function App() {
                   {sessionStorage.getItem("role") == "ADMIN" ? (
                     <User />
                   ) : (
-                    <MainPage />
+                    <Login />
                   )}
                 </>
               }
@@ -74,8 +76,30 @@ function App() {
                 </>
               }
             >
-              <Route path="security" element={<Security />} />
-              <Route path="my-reservations" element={<MyReservations />} />
+              <Route
+                path="security"
+                element={
+                  <>
+                    {sessionStorage.getItem("role") == "ADMIN" ? (
+                      <Security />
+                    ) : (
+                      <Login />
+                    )}
+                  </>
+                }
+              />
+              <Route
+                path="my-reservations"
+                element={
+                  <>
+                    {sessionStorage.getItem("role") == "ADMIN" ? (
+                      <MyReservations />
+                    ) : (
+                      <Login />
+                    )}
+                  </>
+                }
+              />
             </Route>
             <Route path="*" element={<h1>Error 404 : Page Not Found</h1>} />
           </Routes>

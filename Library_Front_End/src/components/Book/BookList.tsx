@@ -140,7 +140,7 @@ const BookList: React.FC = () => {
   const onReserveBookSuccess = () => {
     message.success(
       <span style={{ fontSize: "30px" }}>
-        You have succesfully reserved this book!
+        You have successfully reserved this book!
       </span>
     );
     bookRefetch();

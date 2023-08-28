@@ -29,7 +29,6 @@ export const useReturnBook: () => useReturnBookState = () => {
   } = useReservations(sessionStorage.getItem("username"));
 
   const handleDeleteReservationOk = () => {
-    console.log("first");
     const mappedValues = {
       ...deletedReservation,
       bookTitle: deletedReservation.bookTitle,

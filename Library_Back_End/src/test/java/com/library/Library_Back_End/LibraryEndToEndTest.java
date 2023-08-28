@@ -38,10 +38,12 @@ public class LibraryEndToEndTest {
     private WebDriver driver;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         // Set the path to your ChromeDriver executable
         System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        login("a", "a");
     }
 
     @AfterEach
@@ -51,29 +53,23 @@ public class LibraryEndToEndTest {
         }
     }
 
-    @Test
-    public void testGetBooks() throws InterruptedException {
-        login();
-        getBooks();
-        getMyReservations();
-        // You can further validate the book details as needed
-    }
-
-    public void login() throws InterruptedException {
+    public void login(String username, String password) throws InterruptedException {
         // Open the library web page
         driver.get("http://localhost:3000/login");
 
         // Perform actions to navigate to the getBooks method
 
         WebElement LoginForm = driver.findElement(By.id("basic"));
-        LoginForm.findElement(By.id("basic_username")).sendKeys("a");
-        LoginForm.findElement(By.id("basic_password")).sendKeys("a");
+        LoginForm.findElement(By.id("basic_username")).sendKeys(username);
+        LoginForm.findElement(By.id("basic_password")).sendKeys(password);
         LoginForm.findElement(By.tagName("button")).click();
 
         Thread.sleep(2000);
     }
 
-    public void getBooks() throws InterruptedException {
+
+    @Test
+    public void testGetBooksTableData() throws InterruptedException {
         driver.get("http://localhost:3000/books");
 
         Thread.sleep(2000);
@@ -96,8 +92,6 @@ public class LibraryEndToEndTest {
         String expectedGenre = "ROMANCE"; // Replace with your expected genre
         Assertions.assertEquals(expectedGenre, genreCell.getText());
 
-        // You can add more assertions for other book details as needed
-
         // Example: Assert the number of columns in each row
         int expectedColumns = 5; // Assuming your table has 5 columns (id, title, genre, quantity, action)
         List<WebElement> columns = firstRow.findElements(By.cssSelector(".ant-table-cell"));
@@ -108,7 +102,88 @@ public class LibraryEndToEndTest {
         Assertions.assertEquals(expectedBookCount, bookRows.size());
     }
 
-    public void getMyReservations() throws InterruptedException {
+    @Test
+    public void testSuccessfulReservation() throws InterruptedException {
+        // Navigate to the page containing the BookList component
+        driver.get("http://localhost:3000/books");
+
+        Thread.sleep(2000);
+
+        // Locate and click the "Reserve" button for a book
+        WebElement reserveButton = driver.findElement(By.xpath("//*[contains(text(), 'Reserve')]"));
+        reserveButton.click();
+
+        Thread.sleep(1000);
+
+        // Verify the success message
+        WebElement successMessage = driver.findElement(By.xpath("//span[contains(text(), 'You have successfully reserved this book!')]"));
+        Assertions.assertTrue(successMessage.isDisplayed());
+    }
+
+    @Test
+    public void testSuccessfulReservationDeletion() throws InterruptedException {
+        // Navigate to the page containing the BookList component
+        driver.get("http://localhost:3000/reservations");
+
+        Thread.sleep(2000);
+
+        // Locate and click the "Reserve" button for a book
+        List<WebElement> reserveButton = driver.findElements(By.xpath("//*[contains(text(), 'Delete')]"));
+        reserveButton.get(reserveButton.size() - 1).click();
+
+        Thread.sleep(1000);
+
+        WebElement yesButton = driver.findElement(By.xpath("//*[contains(text(), 'Yes')]"));
+        yesButton.click();
+
+        Thread.sleep(1000);
+
+        // Verify the success message
+        WebElement successMessage = driver.findElement(By.xpath("//span[contains(text(), 'Reservation deleted successfully')]"));
+        Assertions.assertTrue(successMessage.isDisplayed());
+    }
+
+    @Test
+    public void testSearchFunctionOnBookTable() throws InterruptedException {
+        driver.get("http://localhost:3000/books");
+
+        Thread.sleep(2000);
+
+        WebElement titleSearchButton = driver.findElement(By.xpath("//*[@id=\"root\"]/div[4]/div/div/div/div/div/table/thead/tr/th[2]/div/span[2]"));
+        titleSearchButton.click();
+
+        Thread.sleep(1000);
+
+        WebElement searchInput = driver.findElement(By.xpath("//input[@placeholder='Search column']"));
+        searchInput.sendKeys("C");
+
+        Thread.sleep(1000);
+
+        // Assuming the book list is displayed in a table
+        WebElement bookTable = driver.findElement(By.tagName("table"));
+        List<WebElement> bookRows = bookTable.findElements(By.tagName("tr"));
+
+        // Assert that there are at least some books in the list
+        Assertions.assertTrue(bookRows.size() > 0);
+
+        // Example: Assert specific book title in the first row
+        WebElement firstRow = bookRows.get(1);
+        WebElement titleCell = firstRow.findElement(By.cssSelector(".ant-table-cell:nth-child(2)")); // Assuming title is in the second column
+        String expectedTitle = "Secrets of the Cryptic Manor"; // Replace with your expected title
+        Assertions.assertEquals(expectedTitle, titleCell.getText());
+
+        // Example: Assert specific genre in the first row
+        WebElement genreCell = firstRow.findElement(By.cssSelector(".ant-table-cell:nth-child(3)")); // Assuming genre is in the third column
+        String expectedGenre = "MYSTERY"; // Replace with your expected genre
+        Assertions.assertEquals(expectedGenre, genreCell.getText());
+
+        // Example: Assert the total number of books matches the expected count
+        int expectedBookCount = 4; // Replace with your expected book count
+        Assertions.assertEquals(expectedBookCount, bookRows.size());
+    }
+
+    @Test
+    public void testMyReservationsTableData() throws InterruptedException {
         driver.get("http://localhost:3000/profile/my-reservations");
 
         Thread.sleep(2000);
@@ -131,5 +206,19 @@ public class LibraryEndToEndTest {
             WebElement idCell = reservationRows.get(i + 1).findElement(By.cssSelector(".ant-table-cell:nth-child(1)"));
             Assertions.assertEquals(reservations.get(i).getId(), Integer.parseInt(idCell.getText()));
         }
+    }
+
+    @Test
+    public void testOnlyAdminCanAccessAdminPages() throws InterruptedException {
+        login("user", "password");
+
+        driver.get("http://localhost:3000/reservations");
+
+        Thread.sleep(2000);
+
+        // Assuming the reservation list is displayed in a table
+        WebElement homePageTitle = driver.findElement((By.xpath("//h1[contains(text(), 'Login')]")));
+
+        Assertions.assertEquals(homePageTitle.getText(), "Login");
     }
 }
