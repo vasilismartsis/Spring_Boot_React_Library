@@ -36,21 +36,21 @@ build:
 
 test:
   stage: test
-  services:
-    - name: mcr.microsoft.com/mssql/server:2019-latest
-      alias: sqlserver
-  script:
-    - cd  Library_Back_End
-    - ./gradlew test -PdatabaseUrl=jdbc:sqlserver://sqlserver:1433
-  # script:     
+  # services:
+  #   - name: mcr.microsoft.com/mssql/server:2019-latest
+  #     alias: sqlserver
+  # script:
   #   - cd  Library_Back_End
-  #   - gradle check
-  # cache:
-  #   key: "$CI_COMMIT_REF_NAME"
-  #   policy: pull
-  #   paths:
-  #     - build
-  #     - .gradle
+  #   - ./gradlew test -PdatabaseUrl=jdbc:sqlserver://sqlserver:1433
+  script:     
+    - cd  Library_Back_End
+    - gradle check
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build
+      - .gradle
 
 deploy:
   stage: deploy
