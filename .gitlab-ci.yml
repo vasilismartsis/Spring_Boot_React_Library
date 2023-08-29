@@ -10,7 +10,7 @@
 # https://gradle.org/
 # https://github.com/gradle/gradle
 
-image: gradle:alpine
+image: docker:20.10.16
       
 # stages:
 #   - build
