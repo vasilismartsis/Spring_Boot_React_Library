@@ -22,17 +22,17 @@ before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
   - export GRADLE_USER_HOME
 
-build:
-  stage: build
-  script:
-    - cd  Library_Back_End
-    - gradle --build-cache assemble
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
+# build:
+#   stage: build
+#   script:
+#     - cd  Library_Back_End
+#     - gradle --build-cache assemble
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: push
+#     paths:
+#       - build
+#       - .gradle
 
 test:
   stage: test
@@ -51,11 +51,6 @@ test:
     paths:
       - build
       - .gradle
-
-deploy:
-  stage: deploy
-  script: echo "Define your deployment script!"
-  environment: production
 
 # dockerize-backend:
 #   stage: packaging
