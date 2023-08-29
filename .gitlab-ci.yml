@@ -10,7 +10,7 @@
 # https://gradle.org/
 # https://github.com/gradle/gradle
 
-image: docker:20.10.16
+image: gradle:alpine
       
 # stages:
 #   - build
@@ -36,15 +36,20 @@ build:
 
 test:
   stage: test
-  script:     
-    - cd  Library_Back_End
-    - gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
+  services:
+    - name: mcr.microsoft.com/mssql/server:2019-latest
+      alias: sqlserver
+  script:
+    - ./gradlew test -PdatabaseUrl=jdbc:sqlserver://sqlserver:1433
+  # script:     
+  #   - cd  Library_Back_End
+  #   - gradle check
+  # cache:
+  #   key: "$CI_COMMIT_REF_NAME"
+  #   policy: pull
+  #   paths:
+  #     - build
+  #     - .gradle
 
 deploy:
   stage: deploy
