@@ -11,19 +11,22 @@
 # https://github.com/gradle/gradle
 
 image: gradle:alpine
-
-stages:
-  - build
-  - test
-  - packaging
+      
+# stages:
+#   - build
+#   - test
+#   - packaging      
 
 before_script:
-  - GRADLE_USER_HOME="$(pwd)/.gradle"
+  - echo $(pwd)
+  - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
   - export GRADLE_USER_HOME
 
 build:
   stage: build
-  script: gradle --build-cache assemble
+  script:
+    - cd  Library_Back_End
+    - gradle --build-cache assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -33,18 +36,31 @@ build:
 
 test:
   stage: test
-  script: gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
-
-dockerize-backend:
-  stage: packaging
-  image: docker:20.10.16
   services:
-    - docker:20.10.16-dind
+    - name: mcr.microsoft.com/mssql/server:2019-latest
+      alias: sqlserver
   script:
-    - docker ps
+    - cd  Library_Back_End
+    - ./gradlew test -PdatabaseUrl=jdbc:sqlserver://sqlserver:1433
+  # script:     
+  #   - cd  Library_Back_End
+  #   - gradle check
+  # cache:
+  #   key: "$CI_COMMIT_REF_NAME"
+  #   policy: pull
+  #   paths:
+  #     - build
+  #     - .gradle
+
+deploy:
+  stage: deploy
+  script: echo "Define your deployment script!"
+  environment: production
+
+# dockerize-backend:
+#   stage: packaging
+#   image: docker:20.10.16
+#   services:
+#     - docker:20.10.16-dind
+#   script:
+#     - docker ps
