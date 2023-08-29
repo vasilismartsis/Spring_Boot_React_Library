@@ -275,4 +275,18 @@ class BookServiceTest {
         assertNotNull(fileContent);
         assertArrayEquals(expectedFileContent, fileContent);
     }
+
+    @Test
+    void getGenresFailTest() {
+        //Arrange - set up preconditions
+        when(bookConfiguration.genres()).thenReturn(new Genre[]{Genre.HORROR, Genre.MYSTERY});
+
+        //Act - exercise unit under test
+        var output = bookService.getGenres();
+
+        //Assert - verify behavior and result
+        Assertions.assertNull(output);
+        Assertions.assertTrue(output.length > 0);
+        Assertions.assertFalse(output.length > 3);
+    }
 }
