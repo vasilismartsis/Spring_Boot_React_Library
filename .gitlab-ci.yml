@@ -31,6 +31,7 @@ build:
   script:
     - cd  Library_Back_End
     - gradle --build-cache assemble
+    - ls ./build
   artifacts:
     paths:
     - ./build
