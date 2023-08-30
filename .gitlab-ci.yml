@@ -44,6 +44,7 @@ run:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
+    - docker info
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
     - docker ps
