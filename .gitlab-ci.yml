@@ -41,8 +41,8 @@ run:
   dependencies:
     - build
   services:
-    - name: mcr.microsoft.com/mssql/server # Use the MSSQL Docker image as a service
-    - alias: sql-server
+    - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
+      alias: sql-server
   variables:
     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433"  # Adjust the DB URL
