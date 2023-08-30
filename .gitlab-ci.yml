@@ -31,7 +31,7 @@ build_spring_app:
   script:
     - cd Library_Back_End
     - ./gradlew clean build
-    - ls
+    - ls -al
   artifacts:
     paths:
       - build/
