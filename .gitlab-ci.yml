@@ -23,38 +23,34 @@ before_script:
 #   - packaging     
 
 stages:
-  # - build
+  - build
   - run  
 
-# build:
-#   stage: build
-#   script:
-#     - cd  Library_Back_End
-#     - ./gradlew clean build
-#   artifacts:
-#     paths:
-#     - Library_Back_End/build/  
-
+build:
+  stage: build
+  script:
+    - cd  Library_Back_End
+    - ./gradlew clean build
+  artifacts:
+    paths:
+    - Library_Back_End/build/  
 
 run:
   stage: run
-  # dependencies:
-  #   - build
+  dependencies:
+    - build
   services:
     - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
       alias: sql-server
   variables:
     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
-    SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433"  # Adjust the DB URL
+    SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
     SPRING_DATASOURCE_USERNAME: "sa"
     SPRING_DATASOURCE_PASSWORD: "B16301850b"  # Use the same password as MSSQL_SA_PASSWORD
   script:
-    - |
-      /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P B16301850b -Q "SELECT name FROM sys.tables"
-    # - cd Library_Back_End
-    # - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
-
-    
+    - cd Library_Back_End
+    - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
+   
 
 # dockerize:
 #   stage: test
