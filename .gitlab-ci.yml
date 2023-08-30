@@ -40,7 +40,7 @@ run_spring_app:
   stage: run
   image: openjdk:11-jre-slim  # Use a Java runtime image to run the app
   script:
-    - ls
+    - ls Library_Back_End/
     # - java -jar Library_Back_End/build/libs/*.jar  # Adjust the path to the JAR file
     
 
