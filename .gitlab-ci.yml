@@ -38,8 +38,8 @@ stages:
 
 run:
   stage: run
-  dependencies:
-    - build
+  # dependencies:
+  #   - build
   services:
     - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
       alias: sql-server
