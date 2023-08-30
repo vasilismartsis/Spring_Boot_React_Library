@@ -34,7 +34,7 @@ build_spring_app:
     - ls -al
   artifacts:
     paths:
-      - build/
+      - Library_Back_End/build/
 
 run_spring_app:
   stage: run
