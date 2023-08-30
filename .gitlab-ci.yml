@@ -15,7 +15,11 @@ image: gradle:alpine
 # stages:
 #   - build
 #   - test
-#   - packaging      
+#   - packaging     
+
+stages:
+  - build
+  - run  
 
 before_script:
   - echo $(pwd)
