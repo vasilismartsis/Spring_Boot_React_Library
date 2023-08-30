@@ -28,6 +28,8 @@ before_script:
 
 build:
   stage: build
+  artifacts:
+    untracked: true
   script:
     - cd  Library_Back_End
     - gradle --build-cache assemble
