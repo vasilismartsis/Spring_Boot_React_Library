@@ -31,7 +31,6 @@ build:
   script:
     - cd  Library_Back_End
     - gradle --build-cache assemble
-    - ls
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -39,14 +38,15 @@ build:
       - build
       - .gradle
 
-# run:
-#   stage: run
-#   script:
-#     - cd Library_Back_End
-#     - ls
-#     # -  java -jar $(pwd)/Library_Back_End/build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
-#   dependencies:
-#     - build
+run:
+  stage: run
+  dependencies:
+    - build
+  script:
+    - cd Library_Back_End
+    - ls
+    # -  java -jar $(pwd)/Library_Back_End/build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
+
     
 
 # dockerize:
