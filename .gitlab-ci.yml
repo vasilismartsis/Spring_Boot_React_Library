@@ -44,7 +44,7 @@ run:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
-    -docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
     - docker ps
     - docker run --name mssql -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=B16301850b" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
