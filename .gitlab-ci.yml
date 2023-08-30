@@ -17,40 +17,57 @@ image: gradle:alpine
 #   - test
 #   - packaging     
 
-stages:
-  - build
-  - run  
+# stages:
+#   - build
+#   - run  
 
 before_script:
   - echo $(pwd)
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
   - export GRADLE_USER_HOME
 
-build:
-  stage: build
+stages:
+  - create_file
+  - run_file
+
+create_file:
+  stage: create_file
   script:
-    - cd  Library_Back_End
-    - gradle --build-cache assemble
-    - ls ./build
+    - echo "This is a sample file content" > output.txt
   artifacts:
     paths:
-    - ./build
-    expire_in: 1 week
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
+      - output.txt
 
-run:
-  stage: run
-  dependencies:
-    - build
+run_file:
+  stage: run_file
   script:
-    - ls
-    - cd Library_Back_End
-    - ls
+    - cat output.txt
+
+# build:
+#   stage: build
+#   script:
+#     - cd  Library_Back_End
+#     - gradle --build-cache assemble
+#     - ls ./build
+#   artifacts:
+#     paths:
+#     - ./build
+#     expire_in: 1 week
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: push
+#     paths:
+#       - build
+#       - .gradle
+
+# run:
+#   stage: run
+#   dependencies:
+#     - build
+#   script:
+#     - ls
+#     - cd Library_Back_End
+#     - ls
     # -  java -jar $(pwd)/Library_Back_End/build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
 
     
