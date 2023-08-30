@@ -23,22 +23,34 @@ before_script:
 #   - packaging     
 
 stages:
-  - create_file
-  - run_file
+  - build
+  - run  
 
-create_file:
-  stage: create_file
+build:
+  stage: build
   script:
-    - echo "This is a sample file content" > output.txt
+    - cd  Library_Back_End
+    - gradle --build-cache assemble
+    - ls build/libs
   artifacts:
     paths:
-      - output.txt
+    - build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
+  # cache:
+  #   key: "$CI_COMMIT_REF_NAME"
+  #   policy: push
+  #   paths:
+  #     - build
+  #     - .gradle
 
-run_file:
-  stage: run_file
+run:
+  stage: run
+  dependencies:
+    - build
   script:
     - ls
-    - cat output.txt 
+    - cd Library_Back_End
+    - ls build/libs
+    # -  java -jar $(pwd)/Library_Back_End/build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
 
     
 
