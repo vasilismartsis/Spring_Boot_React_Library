@@ -31,15 +31,17 @@ build_spring_app:
   script:
     - cd Library_Back_End
     - ./gradlew clean build
+    - ls
   artifacts:
     paths:
-      - build/libs/*.jar
+      - build/
 
 run_spring_app:
   stage: run
   image: openjdk:11-jre-slim  # Use a Java runtime image to run the app
   script:
-    - java -jar Library_Back_End/build/libs/*.jar  # Adjust the path to the JAR file
+    - ls
+    # - java -jar Library_Back_End/build/libs/*.jar  # Adjust the path to the JAR file
     
 
 # dockerize:
