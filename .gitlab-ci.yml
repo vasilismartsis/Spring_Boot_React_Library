@@ -26,32 +26,20 @@ stages:
   - build
   - run  
 
-build:
+build_spring_app:
   stage: build
   script:
-    - cd  Library_Back_End
-    - gradle --build-cache assemble
-    - ls build/libs
+    - cd Library_Back_End
+    - ./gradlew clean build
   artifacts:
     paths:
-    - build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
-  # cache:
-  #   key: "$CI_COMMIT_REF_NAME"
-  #   policy: push
-  #   paths:
-  #     - build
-  #     - .gradle
+      - build/libs/*.jar
 
-run:
+run_spring_app:
   stage: run
-  dependencies:
-    - build
+  image: openjdk:11-jre-slim  # Use a Java runtime image to run the app
   script:
-    - ls
-    - cd Library_Back_End
-    - ls build/libs
-    # -  java -jar $(pwd)/Library_Back_End/build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
-
+    - java -jar Library_Back_End/build/libs/*.jar  # Adjust the path to the JAR file
     
 
 # dockerize:
