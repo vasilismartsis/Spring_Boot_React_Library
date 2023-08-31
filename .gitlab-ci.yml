@@ -32,6 +32,8 @@ build-frontend:
   script:
     - cd Library_Front_End
     - ls
+    - yarn instal
+    - yarn add net
     - yarn build
     - ls
   artifacts:
