@@ -34,6 +34,7 @@ build-frontend:
     - ls
     - yarn install
     - yarn add net
+    - yarn add react-scripts
     - yarn build
     - ls
   artifacts:
