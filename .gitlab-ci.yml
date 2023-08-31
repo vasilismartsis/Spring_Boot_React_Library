@@ -61,6 +61,9 @@ run:
     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
   script:
       - ls
+      - ls Library_Back_End
+      - ls Library_Back_End/build
+      - ls Library_Front_End
     # - cd Library_Back_End
     # - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
 
