@@ -30,11 +30,13 @@ build-frontend:
   stage: build
   image: node
   script:
-    - ls
     - cd Library_Front_End
-    - yarn install
+    - ls
     - yarn build
     - ls
+  artifacts:
+    paths:
+    - Library_Front_End/build/ 
 
 # build-backend:
 #   stage: build
