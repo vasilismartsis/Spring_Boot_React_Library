@@ -23,17 +23,28 @@ before_script:
 #   - packaging     
 
 stages:
-  - build
-  - run  
+  - build-frontend
+  # - build-backend
+  # - run
 
-build:
+build-frontend:
   stage: build
+  image: node
   script:
-    - cd  Library_Back_End
-    - ./gradlew clean build
-  artifacts:
-    paths:
-    - Library_Back_End/build/  
+    - ls
+    - cd Library_Front_End
+    - yarn install
+    - yarn build
+    - ls
+
+# build-backend:
+#   stage: build
+#   script:
+#     - cd Library_Back_End
+#     - ./gradlew clean build
+#   artifacts:
+#     paths:
+#     - Library_Back_End/build/    
 
 # run:
 #   stage: run
@@ -44,27 +55,26 @@ build:
 #       alias: sql-server
 #   variables:
 #     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
+#     ACCEPT_EULA: Y
 #     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
-#     SPRING_DATASOURCE_USERNAME: "sa"
-#     SPRING_DATASOURCE_PASSWORD: "B16301850b"  # Use the same password as MSSQL_SA_PASSWORD
+#   script:
+#     - cd Library_Front_End
+#     - 
+
+# run:
+#   stage: run
+#   dependencies:
+#     - build
+#   services:
+#     - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
+#       alias: sql-server
+#   variables:
+#     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
+#     ACCEPT_EULA: Y
+#     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
 #   script:
 #     - cd Library_Back_End
-#     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar    
-
-run:
-  stage: run
-  dependencies:
-    - build
-  services:
-    - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
-      alias: sql-server
-  variables:
-    MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
-    ACCEPT_EULA: Y
-    SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
-  script:
-    - cd Library_Back_End
-    - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
+#     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
 
 # dockerize:
 #   stage: test
