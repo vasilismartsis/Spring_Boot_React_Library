@@ -23,11 +23,10 @@ before_script:
 #   - packaging     
 
 stages:
-  - build_frontend
-  # - build-backend
+  - build
   # - run
 
-build_frontend:
+build-frontend:
   stage: build
   image: node
   script:
