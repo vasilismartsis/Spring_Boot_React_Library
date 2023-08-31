@@ -32,7 +32,7 @@ build-frontend:
   script:
     - cd Library_Front_End
     - ls
-    - yarn instal
+    - yarn install
     - yarn add net
     - yarn build
     - ls
