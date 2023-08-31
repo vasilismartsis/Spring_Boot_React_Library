@@ -23,11 +23,13 @@ before_script:
 #   - packaging     
 
 stages:
-  - build
-  # - run
+  - build-frontend
+  - build-backend
+  - run
+  # - test
 
 build-frontend:
-  stage: build
+  stage: build-frontend
   image: node
   script:
     - cd Library_Front_End
@@ -41,44 +43,30 @@ build-frontend:
     paths:
     - Library_Front_End/build/ 
 
-# build-backend:
-#   stage: build
-#   script:
-#     - cd Library_Back_End
-#     - ./gradlew clean build
-#   artifacts:
-#     paths:
-#     - Library_Back_End/build/    
+build-backend:
+  stage: build-backend
+  script:
+    - cd Library_Back_End
+    - ./gradlew clean build
+  artifacts:
+    paths:
+    - Library_Back_End/build/    
 
-# run:
-#   stage: run
-#   dependencies:
-#     - build
-#   services:
-#     - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
-#       alias: sql-server
-#   variables:
-#     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
-#     ACCEPT_EULA: Y
-#     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
-#   script:
-#     - cd Library_Front_End
-#     - 
-
-# run:
-#   stage: run
-#   dependencies:
-#     - build
-#   services:
-#     - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
-#       alias: sql-server
-#   variables:
-#     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
-#     ACCEPT_EULA: Y
-#     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
-#   script:
-#     - cd Library_Back_End
-#     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
+run:
+  stage: run
+  services:
+    - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
+      alias: sql-server
+  variables:
+    MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
+    ACCEPT_EULA: Y
+    SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
+  script:
+    - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
+    - cd Library_Back_End
+    - ls src/main/resources/public
+    - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
+    - gradle check
 
 # dockerize:
 #   stage: test
@@ -97,19 +85,9 @@ build-frontend:
 
 # test:
 #   stage: test
-#   services:
-#     - docker:20.10.16-dind
-#   variables:
-#     DOCKER_TSL_CERTDIR: "/certs"
 #   script:    
 #     - cd  Library_Back_End
 #     - gradle check
-#   cache:
-#     key: "$CI_COMMIT_REF_NAME"
-#     policy: pull
-#     paths:
-#       - build
-#       - .gradle
 
 # dockerize-backend:
 #   stage: packaging
