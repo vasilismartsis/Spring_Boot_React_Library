@@ -30,7 +30,8 @@ stages:
 
 run:
   stage: run
-  script apk add --no-cache chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+  script:
+    - apk add --no-cache chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 # build-frontend:
 #   stage: build-frontend
