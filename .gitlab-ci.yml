@@ -66,7 +66,7 @@ run:
     - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
     - ls src/main/resources/public
-    - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar
+    - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
     - gradle check
 
 # dockerize:
