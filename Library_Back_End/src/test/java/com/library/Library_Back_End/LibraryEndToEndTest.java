@@ -14,6 +14,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,8 @@ import java.util.List;
 
 @SpringBootTest
 public class LibraryEndToEndTest {
+    @Value("${end.to.end.test.ip}")
+    private String endToEndTestIp;
     private final ReservationRepository reservationRepository;
     private final LibraryUserRepository libraryUserRepository;
     private final ReservationSpecifications reservationSpecifications;
@@ -55,7 +58,7 @@ public class LibraryEndToEndTest {
 
     public void login(String username, String password) throws InterruptedException {
         // Open the library web page
-        driver.get("http://localhost:3000/login");
+        driver.get(endToEndTestIp + "/login");
 
         // Perform actions to navigate to the getBooks method
 
@@ -70,7 +73,7 @@ public class LibraryEndToEndTest {
 
     @Test
     public void testGetBooksTableData() throws InterruptedException {
-        driver.get("http://localhost:3000/books");
+        driver.get(endToEndTestIp + "/books");
 
         Thread.sleep(2000);
 
@@ -105,7 +108,7 @@ public class LibraryEndToEndTest {
     @Test
     public void testSuccessfulReservation() throws InterruptedException {
         // Navigate to the page containing the BookList component
-        driver.get("http://localhost:3000/books");
+        driver.get(endToEndTestIp + "/books");
 
         Thread.sleep(2000);
 
@@ -123,7 +126,7 @@ public class LibraryEndToEndTest {
     @Test
     public void testSuccessfulReservationDeletion() throws InterruptedException {
         // Navigate to the page containing the BookList component
-        driver.get("http://localhost:3000/reservations");
+        driver.get(endToEndTestIp + "/reservations");
 
         Thread.sleep(2000);
 
@@ -145,7 +148,7 @@ public class LibraryEndToEndTest {
 
     @Test
     public void testSearchFunctionOnBookTable() throws InterruptedException {
-        driver.get("http://localhost:3000/books");
+        driver.get(endToEndTestIp + "/books");
 
         Thread.sleep(2000);
 
@@ -184,7 +187,7 @@ public class LibraryEndToEndTest {
 
     @Test
     public void testMyReservationsTableData() throws InterruptedException {
-        driver.get("http://localhost:3000/profile/my-reservations");
+        driver.get(endToEndTestIp + "/profile/my-reservations");
 
         Thread.sleep(2000);
 
@@ -212,7 +215,7 @@ public class LibraryEndToEndTest {
     public void testOnlyAdminCanAccessAdminPages() throws InterruptedException {
         login("user", "password");
 
-        driver.get("http://localhost:3000/reservations");
+        driver.get(endToEndTestIp + "/reservations");
 
         Thread.sleep(2000);
 
