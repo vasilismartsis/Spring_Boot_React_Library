@@ -43,7 +43,7 @@ public class LibraryEndToEndTest {
     @BeforeEach
     public void setUp() throws InterruptedException {
         // Set the path to your ChromeDriver executable
-        System.setProperty("webdriver.chrome.driver", "/usr/lib/chromium/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         login("a", "a");
