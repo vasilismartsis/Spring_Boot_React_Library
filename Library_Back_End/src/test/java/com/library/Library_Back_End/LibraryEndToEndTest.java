@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -28,8 +29,8 @@ import java.util.List;
 public class LibraryEndToEndTest {
     @Value("${end.to.end.test.ip}")
     private String endToEndTestIp;
-    @Value("${chromedriver}")
-    private String chromedriver;
+    @Value("${chromedriver.path}")
+    private String chromedriverPath;
     private final ReservationRepository reservationRepository;
     private final LibraryUserRepository libraryUserRepository;
     private final ReservationSpecifications reservationSpecifications;
@@ -46,10 +47,12 @@ public class LibraryEndToEndTest {
     @BeforeEach
     public void setUp() throws InterruptedException, IOException {
         // Set the path to your ChromeDriver executable
-        Process process;
-        process = Runtime.getRuntime()
-                .exec(String.format("/bin/sh -c ls %s", "chromedriver"));
-        System.setProperty("webdriver.chrome.driver", chromedriver);
+        System.out.println(chromedriverPath);
+        File f = new File(chromedriverPath);
+        if (f.exists() && !f.isDirectory()) {
+            System.out.println("haha: " + chromedriverPath);
+        }
+        System.setProperty("webdriver.chrome.driver", chromedriverPath);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         login("a", "a");
