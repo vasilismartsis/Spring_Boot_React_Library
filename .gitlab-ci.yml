@@ -10,7 +10,7 @@
 # https://gradle.org/
 # https://github.com/gradle/gradle
 
-image: spryker/docker-chromedriver
+image: manjarolinux/base
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
@@ -68,6 +68,8 @@ run:
     - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
+    - sudo pacman -S chromium chromedriver
+    - ls /usr/bin/chromedriver
     - ./gradlew test --stacktrace
 
 # dockerize:
