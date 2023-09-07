@@ -68,7 +68,6 @@ run:
     - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
-    - ls /usr/lib/chromium/
     - apk add chromium chromium-chromedriver
     - ls /usr/lib/chromium/
     - ./gradlew test --stacktrace
