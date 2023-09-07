@@ -12,9 +12,9 @@
 
 image: markhobson/maven-chrome
 
-before_script:
-  - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
-  - export GRADLE_USER_HOME
+# before_script:
+#   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
+#   - export GRADLE_USER_HOME
 
 # stages:
 #   - build
