@@ -8,6 +8,8 @@ import com.library.Library_Back_End.reservation.Reservation;
 import com.library.Library_Back_End.reservation.ReservationRepository;
 import com.library.Library_Back_End.reservation.ReservationSpecifications;
 import org.junit.jupiter.api.*;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,6 +37,8 @@ public class LibraryEndToEndTest {
     private final LibraryUserRepository libraryUserRepository;
     private final ReservationSpecifications reservationSpecifications;
 
+    Logger logger = LoggerFactory.getLogger(LibraryEndToEndTest.class);
+
     @Autowired
     public LibraryEndToEndTest(ReservationRepository reservationRepository, LibraryUserRepository libraryUserRepository, ReservationSpecifications reservationSpecifications) {
         this.reservationRepository = reservationRepository;
@@ -46,6 +50,7 @@ public class LibraryEndToEndTest {
 
     @BeforeEach
     public void setUp() throws InterruptedException, IOException {
+        logger.info(() -> "Path is: " + chromedriverPath);
         // Set the path to your ChromeDriver executable
         System.out.println(chromedriverPath);
         File f = new File(chromedriverPath);
@@ -53,6 +58,9 @@ public class LibraryEndToEndTest {
             System.out.println("haha: " + chromedriverPath);
         }
         System.setProperty("webdriver.chrome.driver", chromedriverPath);
+        String property = System.getProperty("webdriver.chrome.driver");
+        System.out.println("Property set: " + property);
+        logger.info(() -> "Property set: " + property);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         login("a", "a");
