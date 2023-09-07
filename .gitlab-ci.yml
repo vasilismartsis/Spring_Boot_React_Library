@@ -10,7 +10,7 @@
 # https://gradle.org/
 # https://github.com/gradle/gradle
 
-image: spryker/docker-chromedriver
+image: gradle:alpine
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
