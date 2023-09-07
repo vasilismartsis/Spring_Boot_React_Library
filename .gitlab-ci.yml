@@ -64,7 +64,7 @@ run:
     ACCEPT_EULA: Y
     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
     END_TO_END_TEST_IP: "http://localhost:8080"
-    CHROMEDRIVER: "/usr/lib/chromium/chromedriver"
+    CHROMEDRIVER_PATH: "/usr/lib/chromium/chromedriver"
   script:
     # - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
