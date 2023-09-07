@@ -28,6 +28,8 @@ import java.util.List;
 public class LibraryEndToEndTest {
     @Value("${end.to.end.test.ip}")
     private String endToEndTestIp;
+    @Value("${chromedriver}")
+    private String chromedriver;
     private final ReservationRepository reservationRepository;
     private final LibraryUserRepository libraryUserRepository;
     private final ReservationSpecifications reservationSpecifications;
@@ -46,8 +48,8 @@ public class LibraryEndToEndTest {
         // Set the path to your ChromeDriver executable
         Process process;
         process = Runtime.getRuntime()
-                .exec(String.format("/bin/sh -c ls %s", "/usr/lib/chromium/chromedriver"));
-        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+                .exec(String.format("/bin/sh -c ls %s", "chromedriver"));
+        System.setProperty("webdriver.chrome.driver", chromedriver);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         login("a", "a");
