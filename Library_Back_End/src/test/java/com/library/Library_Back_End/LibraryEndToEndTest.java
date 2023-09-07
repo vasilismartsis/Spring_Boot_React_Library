@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
@@ -41,9 +42,12 @@ public class LibraryEndToEndTest {
     private WebDriver driver;
 
     @BeforeEach
-    public void setUp() throws InterruptedException {
+    public void setUp() throws InterruptedException, IOException {
         // Set the path to your ChromeDriver executable
-        System.setProperty("webdriver.chrome.driver", "/usr/lib/chromium/chromedriver");
+        Process process;
+        process = Runtime.getRuntime()
+                .exec(String.format("/bin/sh -c ls %s", "/usr/lib/chromium/chromedriver"));
+        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         login("a", "a");
