@@ -56,11 +56,11 @@ public class LibraryEndToEndTest {
 //        System.setProperty("webdriver.chrome.driver", chromedriverPath);
 //        driver = new ChromeDriver();
 
-//        FirefoxOptions firefoxOptions = new FirefoxOptions();
-//        firefoxOptions.setHeadless(true); // Set to true for headless mode
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setHeadless(true); // Set to true for headless mode
 
         System.setProperty("webdriver.gecko.driver", "/usr/bin/geckodriver");
-        driver = new FirefoxDriver();
+        driver = new FirefoxDriver(firefoxOptions);
 
         driver.manage().window().maximize();
         login("a", "a");
