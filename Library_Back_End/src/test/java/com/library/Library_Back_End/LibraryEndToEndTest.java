@@ -14,6 +14,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,19 +51,17 @@ public class LibraryEndToEndTest {
     private WebDriver driver;
 
     @BeforeEach
-    public void setUp() throws InterruptedException, IOException {
-        logger.info(() -> "Path is: " + chromedriverPath);
-        // Set the path to your ChromeDriver executable
-        System.out.println(chromedriverPath);
-        File f = new File(chromedriverPath);
-        if (f.exists() && !f.isDirectory()) {
-            System.out.println("haha: " + chromedriverPath);
-        }
-        System.setProperty("webdriver.chrome.driver", chromedriverPath);
-        String property = System.getProperty("webdriver.chrome.driver");
-        System.out.println("Property set: " + property);
-        logger.info(() -> "Property set: " + property);
-        driver = new ChromeDriver();
+    public void setUp() throws InterruptedException {
+
+//        System.setProperty("webdriver.chrome.driver", chromedriverPath);
+//        driver = new ChromeDriver();
+
+//        FirefoxOptions firefoxOptions = new FirefoxOptions();
+//        firefoxOptions.setHeadless(true); // Set to true for headless mode
+
+        System.setProperty("webdriver.gecko.driver", "/usr/bin/geckodriver");
+        driver = new FirefoxDriver();
+
         driver.manage().window().maximize();
         login("a", "a");
     }
@@ -141,29 +141,6 @@ public class LibraryEndToEndTest {
     }
 
     @Test
-    public void testSuccessfulReservationDeletion() throws InterruptedException {
-        // Navigate to the page containing the BookList component
-        driver.get(endToEndTestIp + "/reservations");
-
-        Thread.sleep(2000);
-
-        // Locate and click the "Reserve" button for a book
-        List<WebElement> reserveButton = driver.findElements(By.xpath("//*[contains(text(), 'Delete')]"));
-        reserveButton.get(reserveButton.size() - 1).click();
-
-        Thread.sleep(1000);
-
-        WebElement yesButton = driver.findElement(By.xpath("//*[contains(text(), 'Yes')]"));
-        yesButton.click();
-
-        Thread.sleep(1000);
-
-        // Verify the success message
-        WebElement successMessage = driver.findElement(By.xpath("//span[contains(text(), 'Reservation deleted successfully')]"));
-        Assertions.assertTrue(successMessage.isDisplayed());
-    }
-
-    @Test
     public void testSearchFunctionOnBookTable() throws InterruptedException {
         driver.get(endToEndTestIp + "/books");
 
@@ -213,7 +190,7 @@ public class LibraryEndToEndTest {
         List<WebElement> reservationRows = reservationTable.findElements(By.tagName("tr"));
 
         // Assert that there are at least some reservations in the list
-        Assertions.assertTrue(reservationRows.size() > 0);
+        Assertions.assertTrue(reservationRows.size() > 1);
 
         LibraryUser libraryUser = libraryUserRepository.findByUsername("a").orElseThrow();
 
@@ -226,6 +203,29 @@ public class LibraryEndToEndTest {
             WebElement idCell = reservationRows.get(i + 1).findElement(By.cssSelector(".ant-table-cell:nth-child(1)"));
             Assertions.assertEquals(reservations.get(i).getId(), Integer.parseInt(idCell.getText()));
         }
+    }
+
+    @Test
+    public void testSuccessfulReservationDeletion() throws InterruptedException {
+        // Navigate to the page containing the BookList component
+        driver.get(endToEndTestIp + "/reservations");
+
+        Thread.sleep(2000);
+
+        // Locate and click the "Reserve" button for a book
+        List<WebElement> reserveButton = driver.findElements(By.xpath("//*[contains(text(), 'Delete')]"));
+        reserveButton.get(reserveButton.size() - 1).click();
+
+        Thread.sleep(1000);
+
+        WebElement yesButton = driver.findElement(By.xpath("//*[contains(text(), 'Yes')]"));
+        yesButton.click();
+
+        Thread.sleep(1000);
+
+        // Verify the success message
+        WebElement successMessage = driver.findElement(By.xpath("//span[contains(text(), 'Reservation deleted successfully')]"));
+        Assertions.assertTrue(successMessage.isDisplayed());
     }
 
     @Test

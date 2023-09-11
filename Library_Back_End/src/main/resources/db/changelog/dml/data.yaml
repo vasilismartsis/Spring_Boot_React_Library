@@ -9,3 +9,5 @@ databaseChangeLog:
             path: db/changelog/dml/testdata/libraryUserData.sql
         - sqlFile:
             path: db/changelog/dml/testdata/bookData.sql
+        - sqlFile:
+            path: db/changelog/dml/testdata/reservationData.sql

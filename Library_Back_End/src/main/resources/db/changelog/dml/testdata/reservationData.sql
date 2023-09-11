@@ -1,0 +1,2 @@
+INSERT INTO reservation (library_user_id, book_id, reservation_date, expiration_date, created_by_id, last_modified_by_id, creation_date, last_modified_date)
+VALUES (2, 1, CURRENT_TIMESTAMP, '2100-09-18 12:00:00', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
