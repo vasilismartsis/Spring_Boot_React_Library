@@ -22,7 +22,7 @@ before_script:
 #   - packaging     
 
 stages:
-  # - build-frontend
+  - build-frontend
   - build-backend
   - run
   # - test
@@ -32,18 +32,18 @@ stages:
 #   script:
 #     - apk add --no-cache chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
-# build-frontend:
-#   stage: build-frontend
-#   image: node
-#   script:
-#     - cd Library_Front_End
-#     - yarn install
-#     - yarn add net
-#     - yarn add react-scripts
-#     - yarn build
-#   artifacts:
-#     paths:
-#     - Library_Front_End/build/ 
+build-frontend:
+  stage: build-frontend
+  image: node
+  script:
+    - cd Library_Front_End
+    - yarn install
+    - yarn add net
+    - yarn add react-scripts
+    - yarn build
+  artifacts:
+    paths:
+      - Library_Front_End/build/ 
 
 build-backend:
   stage: build-backend
@@ -66,12 +66,15 @@ run:
     END_TO_END_TEST_IP: "http://localhost:8080"
     CHROMEDRIVER_PATH: "/usr/lib/chromium/chromedriver"
   script:
-    # - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
+    - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
-    - apk add chromium chromium-chromedriver
-    - ls /usr/lib/chromium
-    - ./gradlew test --stacktrace
+    - wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
+    - tar -xzvf geckodriver-v0.33.0-linux64.tar.gz
+    - mv geckodriver /usr/bin/
+    - apk update
+    - apk add firefox
+    - ./gradlew test
 
 # dockerize:
 #   stage: test
