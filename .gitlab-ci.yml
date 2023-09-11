@@ -1,4 +1,4 @@
-# This file is a template, and might need editing before it works on your project.
+\# This file is a template, and might need editing before it works on your project.
 # You can copy and paste this template into a new `.gitlab-ci.yml` file.
 # You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
 # To contribute improvements to CI/CD templates, please follow the Development guide at:
@@ -22,7 +22,7 @@ before_script:
 #   - packaging     
 
 stages:
-  # - build-frontend
+  - build-frontend
   - build-backend
   - run
   # - test
@@ -66,12 +66,15 @@ run:
     END_TO_END_TEST_IP: "http://localhost:8080"
     CHROMEDRIVER_PATH: "/usr/lib/chromium/chromedriver"
   script:
-    # - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
+    - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
-    - apk add chromium chromium-chromedriver
-    - ls /usr/lib/chromium
-    - ./gradlew test --stacktrace
+    - wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
+    - tar -xzvf geckodriver-v0.33.0-linux64.tar.gz
+    - mv geckodriver /usr/bin/
+    - apk update
+    - apk add firefox
+    - ./gradlew test
 
 # dockerize:
 #   stage: test
