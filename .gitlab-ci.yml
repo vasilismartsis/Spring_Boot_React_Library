@@ -32,18 +32,18 @@ stages:
 #   script:
 #     - apk add --no-cache chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
-# build-frontend:
-#   stage: build-frontend
-#   image: node
-#   script:
-#     - cd Library_Front_End
-#     - yarn install
-#     - yarn add net
-#     - yarn add react-scripts
-#     - yarn build
-#   artifacts:
-#     paths:
-#     - Library_Front_End/build/ 
+build-frontend:
+  stage: build-frontend
+  image: node
+  script:
+    - cd Library_Front_End
+    - yarn install
+    - yarn add net
+    - yarn add react-scripts
+    - yarn build
+  artifacts:
+    paths:
+    - Library_Front_End/build/ 
 
 build-backend:
   stage: build-backend
