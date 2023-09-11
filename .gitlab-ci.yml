@@ -10,7 +10,7 @@
 # https://gradle.org/
 # https://github.com/gradle/gradle
 
-image: gradle:alpine
+image: eclipse-temurin:17-jdk-alpine
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
@@ -70,6 +70,7 @@ run:
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
     - apk add chromium chromium-chromedriver
+    - ls /usr/lib/chromium
     - ./gradlew test --stacktrace
 
 # dockerize:
