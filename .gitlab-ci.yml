@@ -42,8 +42,8 @@ build-frontend:
     - yarn add react-scripts
     - yarn build
   artifacts:
-  paths:
-    - Library_Front_End/build/ 
+    paths:
+      - Library_Front_End/build/ 
 
 build-backend:
   stage: build-backend
