@@ -63,7 +63,7 @@ run:
     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
     ACCEPT_EULA: Y
     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
-    END_TO_END_TEST_IP: "http://127.0.0.1:8080"
+    END_TO_END_TEST_IP: 
   script:
     - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
@@ -73,7 +73,8 @@ run:
     - mv geckodriver /usr/bin/
     - apk update
     - apk add curl
-    - curl -kX GET http://localhost:8080
+    - ip addr
+    - curl -kX GET http://127.0.0.1:8080
     - apk add firefox
     - ./gradlew test
 
