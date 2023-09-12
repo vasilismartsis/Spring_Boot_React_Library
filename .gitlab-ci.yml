@@ -15,6 +15,7 @@ image: eclipse-temurin:17-jdk-alpine
 before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
   - export GRADLE_USER_HOME
+  - echo docker
 
 # stages:
 #   - build
@@ -36,7 +37,6 @@ build-frontend:
   stage: build-frontend
   image: node
   script:
-    - echo $CI_RUNNER_IP_ADDRESS
     - cd Library_Front_End
     - yarn install
     - yarn add net
@@ -66,7 +66,6 @@ run:
     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
     END_TO_END_TEST_IP: ${{ secrets.SERVER_IP }}
   script:
-    - evn
     - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
@@ -76,7 +75,7 @@ run:
     - apk update
     - apk add curl
     - ip addr
-    - curl -kX GET http://172.17.0.11:8080
+    - curl -kX GET http://docker:8080
     - apk add firefox
     - ./gradlew test
 
