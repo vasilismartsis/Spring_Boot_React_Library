@@ -23,7 +23,7 @@ before_script:
 
 stages:
   # - build-frontend
-  # - build-backend
+  - build-backend
   - run
   # - test
 
@@ -45,14 +45,14 @@ stages:
 #     paths:
 #       - Library_Front_End/build/ 
 
-# build-backend:
-#   stage: build-backend
-#   script:
-#     - cd Library_Back_End
-#     - ./gradlew build -x test
-#   artifacts:
-#     paths:
-#     - Library_Back_End/build/    
+build-backend:
+  stage: build-backend
+  script:
+    - cd Library_Back_End
+    - ./gradlew build -x test
+  artifacts:
+    paths:
+    - Library_Back_End/build/    
 
 run:
   stage: run
@@ -77,8 +77,7 @@ run:
     - apk update
     - apk add curl
     - ip addr
-    - ps
-    - curl -kX GET http://127.0.0.1:8080
+    - curl -kX GET $END_TO_END_TEST_IP
     - apk add firefox
     - ./gradlew test
 
