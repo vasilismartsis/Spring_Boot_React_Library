@@ -77,7 +77,7 @@ run:
     - apk update
     - apk add curl
     - ip addr
-    # - curl -kX GET http://localhost:8080
+    - curl -kX GET http://$END_TO_END_TEST_IP
     - apk add firefox
     - ./gradlew test
 
