@@ -15,7 +15,7 @@ image: eclipse-temurin:17-jdk-alpine
 before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
   - export GRADLE_USER_HOME
-  - echo ${{ secrets.SERVER_IP }}
+  - echo $host.docker.internal
 
 # stages:
 #   - build
@@ -64,7 +64,7 @@ run:
     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
     ACCEPT_EULA: Y
     SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
-    END_TO_END_TEST_IP: ${{ secrets.SERVER_IP }}
+    END_TO_END_TEST_IP: http://docker:8080
   script:
     - cp -a Library_Front_End/build/. Library_Back_End/src/main/resources/public
     - cd Library_Back_End
