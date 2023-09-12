@@ -33,8 +33,6 @@ import java.util.List;
 public class LibraryEndToEndTest {
     @Value("${end.to.end.test.ip}")
     private String endToEndTestIp;
-    @Value("${chromedriver.path}")
-    private String chromedriverPath;
     private final ReservationRepository reservationRepository;
     private final LibraryUserRepository libraryUserRepository;
     private final ReservationSpecifications reservationSpecifications;
@@ -79,6 +77,8 @@ public class LibraryEndToEndTest {
 
         // Perform actions to navigate to the getBooks method
 
+
+        Thread.sleep(10000);
         WebElement LoginForm = driver.findElement(By.id("basic"));
         LoginForm.findElement(By.id("basic_username")).sendKeys(username);
         LoginForm.findElement(By.id("basic_password")).sendKeys(password);
