@@ -77,6 +77,8 @@ run:
     - apk update
     - apk add curl
     - ip addr
+    - apk add iproute2
+    - ss -tuln
     - netstat -tuln
     - curl -kX GET $END_TO_END_TEST_IP
     - apk add firefox
