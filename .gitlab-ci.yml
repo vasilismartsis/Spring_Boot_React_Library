@@ -36,6 +36,7 @@ build-frontend:
   stage: build-frontend
   image: node
   script:
+    - echo "Runner IP Address: $CI_RUNNER_IP_ADDRESS"
     - cd Library_Front_End
     - yarn install
     - yarn add net
