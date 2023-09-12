@@ -82,7 +82,7 @@ run:
     - ss -tuln
     - netstat -tuln
     - ps
-    - curl -kX GET http://localhost:8080
+    - curl -kX GET http://localhost:8080/login
     - apk add firefox
     - ./gradlew test
 
