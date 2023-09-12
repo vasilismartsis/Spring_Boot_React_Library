@@ -80,6 +80,7 @@ run:
     - apk add iproute2
     - ss -tuln
     - netstat -tuln
+    - ps
     - curl -kX GET $END_TO_END_TEST_IP
     - apk add firefox
     - ./gradlew test
