@@ -77,7 +77,7 @@ run:
     - apk update
     - apk add curl
     - ip addr
-    - sleep 20
+    - sleep 60
     - apk add iproute2
     - ss -tuln
     - netstat -tuln
