@@ -15,7 +15,7 @@ image: eclipse-temurin:17-jdk-alpine
 before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
   - export GRADLE_USER_HOME
-  - echo docker
+  - echo ${{ secrets.SERVER_IP }}
 
 # stages:
 #   - build
