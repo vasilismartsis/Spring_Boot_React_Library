@@ -24,7 +24,7 @@ before_script:
 stages:
   - build-frontend
   - build-backend
-  - run
+  - test
   # - test
 
 # run:
@@ -55,37 +55,26 @@ build-backend:
     paths:
     - Library_Back_End/build/    
 
-run:
-  stage: run
+test:
+  stage: test
   services:
     - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
-      alias: sql-server
+      alias: mssql
   variables:
     MSSQL_SA_PASSWORD: "B16301850b"  # Set the SA password
     ACCEPT_EULA: Y
-    SPRING_DATASOURCE_URL: "jdbc:sqlserver://sql-server:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
+    SPRING_DATASOURCE_URL: "jdbc:sqlserver://mssql:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
     END_TO_END_TEST_IP: http://localhost:8080
   script:
-    - export RUNNER_IP=$(ifconfig eth0 | grep 'inet ' | awk '{print $2}' | cut -d ':' -f 2)
+    # - export RUNNER_IP=$(ifconfig eth0 | grep 'inet ' | awk '{print $2}' | cut -d ':' -f 2)
     # - export END_TO_END_TEST_IP="http://${RUNNER_IP}:8080"
-    - env
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
     - wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
     - tar -xzvf geckodriver-v0.33.0-linux64.tar.gz
     - mv geckodriver /usr/bin/
-    - apk update
-    - apk add curl
-    - ip addr
     - sleep 60
-    - apk add iproute2
-    - ss -tuln
-    - netstat -tuln
-    - ps
-    # - curl -kX GET http://localhost:8080
-    # - curl -kX GET http://localhost:8080/login
-    # - curl -kX GET $END_TO_END_TEST_IP
-    # - curl -kX GET $END_TO_END_TEST_IP/login
+    - apk update
     - apk add firefox
     - ./gradlew test
 
