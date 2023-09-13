@@ -77,7 +77,9 @@ public class LibraryEndToEndTest {
 
         // Perform actions to navigate to the getBooks method
 
-
+        Thread.sleep(1000);
+        Thread.sleep(1000);
+        Thread.sleep(1000);
         Thread.sleep(10000);
         WebElement LoginForm = driver.findElement(By.id("basic"));
         LoginForm.findElement(By.id("basic_username")).sendKeys(username);
