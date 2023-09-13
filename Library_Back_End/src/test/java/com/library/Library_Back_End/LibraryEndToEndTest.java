@@ -215,7 +215,7 @@ public class LibraryEndToEndTest {
         List<WebElement> reserveButton = driver.findElements(By.xpath("//*[contains(text(), 'Delete')]"));
         reserveButton.get(reserveButton.size() - 1).click();
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         WebElement yesButton = driver.findElement(By.xpath("//*[contains(text(), 'Yes')]"));
         yesButton.click();

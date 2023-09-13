@@ -13,6 +13,8 @@ services:
     build: ./Library_Back_End
     environment:
       - spring.datasource.url=jdbc:sqlserver://docker_mssql;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE
+      # - END_TO_END_TEST_IP=http://frontend:3000
+      - END_TO_END_TEST_IP=http://localhost:8080
     ports:
       - "8080:8080"
   frontend:
