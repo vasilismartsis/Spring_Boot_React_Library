@@ -82,8 +82,8 @@ run:
     - ss -tuln
     - netstat -tuln
     - ps
-    - curl -kX GET http://END_TO_END_TEST_IP
-    - curl -kX GET http://END_TO_END_TEST_IP/login
+    - curl -kX GET http://$END_TO_END_TEST_IP
+    - curl -kX GET http://$END_TO_END_TEST_IP/login
     - apk add firefox
     - ./gradlew test
 
