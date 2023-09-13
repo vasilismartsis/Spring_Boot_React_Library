@@ -75,12 +75,9 @@ public class LibraryEndToEndTest {
         // Open the library web page
         driver.get(endToEndTestIp + "/login");
 
-        // Perform actions to navigate to the getBooks method
+        Thread.sleep(2000);
 
-        Thread.sleep(1000);
-        Thread.sleep(1000);
-        Thread.sleep(1000);
-        Thread.sleep(10000);
+        // Perform actions to navigate to the getBooks method
         WebElement LoginForm = driver.findElement(By.id("basic"));
         LoginForm.findElement(By.id("basic_username")).sendKeys(username);
         LoginForm.findElement(By.id("basic_password")).sendKeys(password);
