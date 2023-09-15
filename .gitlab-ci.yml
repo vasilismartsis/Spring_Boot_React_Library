@@ -14,23 +14,12 @@ image: eclipse-temurin:17-jdk-alpine
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/Library_Back_End/.gradle"
-  - export GRADLE_USER_HOME
-
-# stages:
-#   - build
-#   - test
-#   - packaging     
+  - export GRADLE_USER_HOME     
 
 stages:
   - build-frontend
   - build-backend
   - test
-  # - test
-
-# run:
-#   stage: run
-#   script:
-#     - apk add --no-cache chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 build-frontend:
   stage: build-frontend
@@ -66,43 +55,9 @@ test:
     SPRING_DATASOURCE_URL: "jdbc:sqlserver://mssql:1433;encrypt=true;trustServerCertificate=true;DB_CLOSE_ON_EXIT=FALSE"  # Adjust the DB URL
     END_TO_END_TEST_IP: http://localhost:8080
   script:
-    # - export RUNNER_IP=$(ifconfig eth0 | grep 'inet ' | awk '{print $2}' | cut -d ':' -f 2)
-    # - export END_TO_END_TEST_IP="http://${RUNNER_IP}:8080"
     - cd Library_Back_End
     - java -jar build/libs/Library_Back_End-0.0.1-SNAPSHOT.jar &
-    - wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
-    - tar -xzvf geckodriver-v0.33.0-linux64.tar.gz
-    - mv geckodriver /usr/bin/
     - sleep 60
     - apk update
-    - apk add firefox
-    - ./gradlew test
-
-# dockerize:
-#   stage: test
-#   services:
-#     - docker:20.10.16-dind
-#   variables:
-#     DOCKER_TSL_CERTDIR: "/certs"
-#   script:    
-#     - docker-compose up --build -d
-#   cache:
-#     key: "$CI_COMMIT_REF_NAME"
-#     policy: pull
-#     paths:
-#       - build
-#       - .gradle
-
-# test:
-#   stage: test
-#   script:    
-#     - cd  Library_Back_End
-#     - gradle check
-
-# dockerize-backend:
-#   stage: packaging
-#   image: docker:20.10.16
-#   services:
-#     - docker:20.10.16-dind
-#   script:
-#     - docker ps
+    - apk add chromium chromium-chromedriver
+    - ./gradlew test --debug
