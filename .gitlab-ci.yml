@@ -60,4 +60,4 @@ test:
     - sleep 60
     - apk update
     - apk add chromium chromium-chromedriver
-    - ./gradlew test --debug
+    - ./gradlew test
