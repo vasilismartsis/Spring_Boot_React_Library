@@ -11,11 +11,15 @@ import org.junit.jupiter.api.*;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,15 +54,19 @@ public class LibraryEndToEndTest {
 
     @BeforeEach
     public void setUp() throws InterruptedException {
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--headless=new");
+        chromeOptions.addArguments("--disable-dev-shm-usage");
+        chromeOptions.addArguments("--no-sandbox");
 
-//        System.setProperty("webdriver.chrome.driver", chromedriverPath);
-//        driver = new ChromeDriver();
+        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+        driver = new ChromeDriver(chromeOptions);
 
-        FirefoxOptions firefoxOptions = new FirefoxOptions();
-        firefoxOptions.setHeadless(true); // Set to true for headless mode
-
-        System.setProperty("webdriver.gecko.driver", "/usr/bin/geckodriver");
-        driver = new FirefoxDriver(firefoxOptions);
+//        FirefoxOptions firefoxOptions = new FirefoxOptions();
+//        firefoxOptions.setHeadless(true); // Set to true for headless mode
+//
+//        System.setProperty("webdriver.gecko.driver", "/usr/bin/geckodriver");
+//        driver = new FirefoxDriver(firefoxOptions);
 
         driver.manage().window().maximize();
         login("a", "a");
@@ -211,13 +219,20 @@ public class LibraryEndToEndTest {
 
         Thread.sleep(2000);
 
-        // Locate and click the "Reserve" button for a book
-        List<WebElement> reserveButton = driver.findElements(By.xpath("//*[contains(text(), 'Delete')]"));
-        reserveButton.get(reserveButton.size() - 1).click();
+        // Locate and click the "Delete" button for a reservation
+//        List<WebElement> deleteButton = driver.findElements(By.xpath("//*[contains(text(), 'Delete')]"));
+        WebElement deleteButton = driver.findElement(By.xpath("/html/body/div/div[3]/div/div/div/div/div/table/tbody/tr[2]/td[10]/button[2]"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", deleteButton);
+        Actions act = new Actions(driver);
+        act.moveToElement(deleteButton).click().perform();
+        //reserveButton.get(reserveButton.size() - 1).click();
+        System.out.println("-------------------------------HELOOOOOOOOOOOOOOOOO---------------------------------");
+//        deleteButton.click();
 
-        Thread.sleep(3000);
+        Thread.sleep(1000);
 
-        WebElement yesButton = driver.findElement(By.xpath("//*[contains(text(), 'Yes')]"));
+//        WebElement yesButton = driver.findElement(By.xpath("//*[contains(text(), 'Yes')]"));
+        WebElement yesButton = driver.findElement(By.xpath("/html/body/div[2]/div/div[2]/div/div/div/div[2]/button[2]"));
         yesButton.click();
 
         Thread.sleep(1000);
