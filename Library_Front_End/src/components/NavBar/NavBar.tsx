@@ -91,7 +91,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
                   ),
                   key: "userName",
                   disabled: true,
-                  style: { height: "60px" },
+                  style: { height: "40px" },
                 }
               : null,
             sessionStorage.getItem("username")
