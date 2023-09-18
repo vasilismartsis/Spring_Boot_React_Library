@@ -35,7 +35,7 @@ build-frontend:
     paths:
       - Library_Front_End/build/ 
 
-  test-frontend:
+test-frontend:
   stage: test-frontend
   image: node
   script:
