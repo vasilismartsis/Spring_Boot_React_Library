@@ -29,6 +29,7 @@ build-frontend:
     - yarn install
     - yarn add net
     - yarn add react-scripts
+    - yarn test
     - yarn build
   artifacts:
     paths:
