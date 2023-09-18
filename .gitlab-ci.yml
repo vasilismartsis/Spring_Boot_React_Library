@@ -18,8 +18,9 @@ before_script:
 
 stages:
   - build-frontend
+  - test-frontend
   - build-backend
-  - test
+  - test-backend
 
 build-frontend:
   stage: build-frontend
@@ -34,6 +35,14 @@ build-frontend:
     paths:
       - Library_Front_End/build/ 
 
+test-frontend:
+  stage: test-frontend
+  image: node
+  script:
+    - cd Library_Front_End
+    - yarn install
+    - yarn test
+
 build-backend:
   stage: build-backend
   script:
@@ -44,8 +53,8 @@ build-backend:
     paths:
     - Library_Back_End/build/    
 
-test:
-  stage: test
+test-backend:
+  stage: test-backend
   services:
     - name: "mcr.microsoft.com/mssql/server" # Use the MSSQL Docker image as a service
       alias: mssql
